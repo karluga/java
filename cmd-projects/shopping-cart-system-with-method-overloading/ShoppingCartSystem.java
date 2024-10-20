@@ -1,3 +1,4 @@
+// Using the ArrayList structure because storing different types of data
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -18,6 +19,7 @@ class Item {
         return (price * quantity) * (1 - (discount / 100));
     }
 
+    // Method for easy object printing
     public String toString() {
         return String.format("Item: %s, Price: %.2f, Quantity: %d, Discount: %.2f%%", name, price, quantity, discount);
     }
@@ -26,6 +28,7 @@ class Item {
 public class ShoppingCartSystem {
     private ArrayList<Item> cart = new ArrayList<>();
 
+    // Example of method overloading
     public void addItem(String name, double price) {
         addItem(name, price, 1, 0.0);
     }
@@ -68,7 +71,7 @@ public class ShoppingCartSystem {
             System.out.println("6. Exit");
             System.out.print("Choose an option: ");
             choice = scanner.nextInt();
-            scanner.nextLine();  // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
