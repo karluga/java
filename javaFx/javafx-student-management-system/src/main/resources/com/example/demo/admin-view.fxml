@@ -1,0 +1,27 @@
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ComboBox?>
+<HBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.example.demo.AdminController">
+    <VBox>
+        <TableView fx:id="studentTable">
+            <columns>
+                <TableColumn fx:id="idColumn" text="ID"/>
+                <TableColumn fx:id="nameColumn" text="Full Name"/>
+                <TableColumn fx:id="courseColumn" text="Course"/>
+                <TableColumn fx:id="gradeColumn" text="Average Grade"/>
+            </columns>
+        </TableView>
+        <Button text="Delete Student" onAction="#onDeleteStudentClick"/>
+    </VBox>
+    <VBox spacing="10" alignment="CENTER">
+        <TextField fx:id="nameField" promptText="Full Name"/>
+        <TextField fx:id="idField" promptText="ID"/>
+        <ComboBox fx:id="courseDropdown" promptText="Select Course"/>
+        <Button text="Add Student" onAction="#onAddStudentClick"/>
+    </VBox>
+</HBox>
