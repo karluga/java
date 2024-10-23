@@ -4,14 +4,16 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class TextProcessingSystem {
-    // Color codes
+    // ANSI escape codes for coloring text
     public static final String ANSI_RED = "\033[31m";
+    public static final String ANSI_YELLOW = "\033[33m";
+    public static final String ANSI_GREEN = "\033[32m";
     public static final String ANSI_RESET = "\033[0m";
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Text Processing System");
-        String text = inputText(scanner, "Please input your text below:");
+        String text = inputText(scanner, "Please input your text: ");
 
         while (true) {
             System.out.println("\nYour text: " + text);
@@ -23,8 +25,25 @@ public class TextProcessingSystem {
             System.out.println("6. Exit");
             System.out.print("Enter your choice: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+
+            int choice = 0;
+            boolean validChoice = false; // Flag
+
+            // Loop until a valid choice is entered
+            while (!validChoice) {
+                System.out.print(ANSI_YELLOW);
+                try {
+                    choice = scanner.nextInt();
+                    validChoice = true;
+                } catch (Exception e) {
+                    System.out.print(ANSI_RED);
+                    System.out.println("Invalid choice. Please enter a number between 1 and 6.");
+                    //Get new input
+                    System.out.print(ANSI_YELLOW);
+                    scanner.nextLine(); // Causes infinite loop if deleted lol
+                }
+            }
+            System.out.print(ANSI_RESET);
 
             switch (choice) {
                 case 1:
@@ -44,7 +63,7 @@ public class TextProcessingSystem {
                     break;
 
                 case 5:
-                    text = inputText(scanner, "Please input new text:");
+                    text = inputText(scanner, "Please input new text: ");
                     break;
 
                 case 6:
@@ -62,7 +81,7 @@ public class TextProcessingSystem {
     // Method to count words in the text
     public static void countWords(String text) {
         int wordCount = text.split("\\s+").length;
-        System.out.println("Word count: " + wordCount);
+        System.out.println("Word count: " + ANSI_GREEN + wordCount + ANSI_RESET);
     }
 
     // Method to find pattern and highlight matches
@@ -89,7 +108,7 @@ public class TextProcessingSystem {
             int lastIndex = 0;
             do {
                 coloredText.append(text, lastIndex, matcher.start());
-                coloredText.append(ANSI_RED).append(matcher.group()).append(ANSI_RESET);
+                coloredText.append(ANSI_GREEN).append(matcher.group()).append(ANSI_RESET);
                 lastIndex = matcher.end();
             } while (matcher.find());
 
@@ -97,7 +116,7 @@ public class TextProcessingSystem {
             System.out.println("Text with matched pattern highlighted:");
             System.out.println(coloredText.toString());
         } else {
-            System.out.println("Pattern not found for '" + pattern + "'.");
+            System.out.println("Pattern not found.");
         }
     }
 
@@ -133,7 +152,10 @@ public class TextProcessingSystem {
         String input = "";
         while (input.isEmpty()) {
             System.out.print(prompt);
+            System.out.print(ANSI_YELLOW); // Set input to yellow
             input = scanner.nextLine().trim();
+            System.out.print(ANSI_RESET); // Reset color
+
             if (input.isEmpty()) {
                 System.out.println("Input cannot be empty. Please try again.");
             }
