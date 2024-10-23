@@ -4,7 +4,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 public class TextProcessingSystem {
-    // ANSI escape codes for coloring text
+    // Color codes
     public static final String ANSI_RED = "\033[31m";
     public static final String ANSI_YELLOW = "\033[33m";
     public static final String ANSI_GREEN = "\033[32m";
