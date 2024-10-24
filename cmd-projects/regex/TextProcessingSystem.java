@@ -16,6 +16,7 @@ public class TextProcessingSystem {
         String text = inputText(scanner, "Please input your text: ");
 
         while (true) {
+            // Menu
             System.out.println("\nYour text: " + text);
             System.out.println("1. Count Words");
             System.out.println("2. Find Pattern");
@@ -34,13 +35,12 @@ public class TextProcessingSystem {
                 System.out.print(ANSI_YELLOW);
                 try {
                     choice = scanner.nextInt();
+                    scanner.nextLine();
                     validChoice = true;
                 } catch (Exception e) {
                     System.out.print(ANSI_RED);
                     System.out.println("Invalid choice. Please enter a number between 1 and 6.");
-                    //Get new input
-                    System.out.print(ANSI_YELLOW);
-                    scanner.nextLine(); // Causes infinite loop if deleted lol
+                    scanner.nextLine(); // Clear invalid input to avoid infinite loop
                 }
             }
             System.out.print(ANSI_RESET);
@@ -94,7 +94,7 @@ public class TextProcessingSystem {
         while (!isValidPattern) {
             pattern = inputText(scanner, "Enter pattern to find:");
             try {
-                compiledPattern = Pattern.compile(pattern); // Try to compile the regex
+                compiledPattern = Pattern.compile(pattern); // Try to compile the regex (case sensitive)
                 isValidPattern = true;
             } catch (PatternSyntaxException e) {
                 System.out.println("Invalid regex pattern: " + e.getDescription() + "\nPlease enter a different one.");
@@ -131,30 +131,27 @@ public class TextProcessingSystem {
 
     // Method to validate email
     public static void validateEmail(Scanner scanner) {
-        String email = inputText(scanner, "Enter email to validate:");
-        if (isValidEmail(email)) {
+        System.out.print("Enter email to validate: ");
+        String email = scanner.nextLine();
+    
+        // Regex pattern for email validation
+        String emailRegex = "^[a-z0-9.-]+@[a-z0-9.-]+\\.[a-z]{2,}$";
+    
+        if (Pattern.matches(emailRegex, email)) {
             System.out.println("Email is valid");
         } else {
             System.out.println("Invalid email");
         }
     }
 
-    // Helper method to validate email using regex
-    public static boolean isValidEmail(String email) {
-        String emailRegex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-        Pattern pattern = Pattern.compile(emailRegex);
-        Matcher matcher = pattern.matcher(email);
-        return matcher.matches();
-    }
-
-    // Method to get user input and validate it's not empty
+    // Method to get user input
     public static String inputText(Scanner scanner, String prompt) {
         String input = "";
         while (input.isEmpty()) {
             System.out.print(prompt);
-            System.out.print(ANSI_YELLOW); // Set input to yellow
+            System.out.print(ANSI_YELLOW);
             input = scanner.nextLine().trim();
-            System.out.print(ANSI_RESET); // Reset color
+            System.out.print(ANSI_RESET);
 
             if (input.isEmpty()) {
                 System.out.println("Input cannot be empty. Please try again.");
