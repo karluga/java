@@ -3,6 +3,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
+// string heap
+/*
+String str1 = "Hello";               // "Hello" stored in the string pool
+String str2 = "Hello";               // Points to the same "Hello" in the pool
+String str3 = new String("Hello");   // New object created in the heap
+
+str1 == str2 is true (both reference the same pool object).
+str1 == str3 is false (one is in the pool, and the other is a separate object in the heap).
+ */
+
+// pattern.matches = entire string
+// pattern.find = subsequent
+
 public class TextProcessingSystem {
     // Color codes
     public static final String ANSI_RED = "\033[31m";
@@ -107,7 +120,7 @@ public class TextProcessingSystem {
             StringBuilder coloredText = new StringBuilder();
             int lastIndex = 0;
             do {
-                coloredText.append(text, lastIndex, matcher.start());
+                coloredText.append(text, lastIndex, matcherAaart());
                 coloredText.append(ANSI_GREEN).append(matcher.group()).append(ANSI_RESET);
                 lastIndex = matcher.end();
             } while (matcher.find());
