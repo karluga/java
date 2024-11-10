@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.util.InputMismatchException;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
@@ -11,7 +10,7 @@ public class SupermarketInventory {
 
     public static void main(String[] args) {
         boolean running = true;
-        
+
         while (running) {
             System.out.println("\nSupermarket Inventory System");
             System.out.println("1. Add Perishable Product");
@@ -22,7 +21,7 @@ public class SupermarketInventory {
             System.out.print("Enter command (1-5): ");
 
             int command = getIntInput(1, 5);
-            
+
             switch (command) {
                 case 1 -> addPerishableProduct();
                 case 2 -> addNonPerishableProduct();
@@ -32,19 +31,18 @@ public class SupermarketInventory {
                 default -> System.out.println("Invalid command.");
             }
         }
-        
+
         scanner.close();
         System.out.println("Exiting system. Goodbye!");
     }
 
     private static void addPerishableProduct() {
-        System.out.print("Enter Product ID: ");
-        String productId = scanner.nextLine();
+        String productId = getUniqueProductId();
         System.out.print("Enter Product Name: ");
         String name = scanner.nextLine();
         double price = getValidatedPrice("Enter Price: ");
         int quantity = getIntInput("Enter Quantity: ");
-        
+
         String expiryDate;
         while (true) {
             System.out.print("Enter Expiry Date (YYYY-MM-DD): ");
@@ -61,13 +59,12 @@ public class SupermarketInventory {
     }
 
     private static void addNonPerishableProduct() {
-        System.out.print("Enter Product ID: ");
-        String productId = scanner.nextLine();
+        String productId = getUniqueProductId();
         System.out.print("Enter Product Name: ");
         String name = scanner.nextLine();
         double price = getValidatedPrice("Enter Price: ");
         int quantity = getIntInput("Enter Quantity: ");
-        
+
         String warrantyMonths;
         while (true) {
             int months = getIntInput("Enter Warranty Period (months): ");
@@ -83,6 +80,29 @@ public class SupermarketInventory {
         System.out.println("Non-perishable product added.");
     }
 
+    private static String getUniqueProductId() {
+        String productId;
+        while (true) {
+            System.out.print("Enter Product ID: ");
+            productId = scanner.nextLine().trim();
+            if (!isDuplicateId(productId)) {
+                break;
+            } else {
+                System.out.println("Product ID already exists. Please enter a unique Product ID.");
+            }
+        }
+        return productId;
+    }
+
+    private static boolean isDuplicateId(String productId) {
+        for (Product product : inventory) {
+            if (product.getProductId().equalsIgnoreCase(productId)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static void displayProductInfo() {
         if (inventory.isEmpty()) {
             System.out.println("No products in inventory.");
@@ -96,7 +116,7 @@ public class SupermarketInventory {
     private static void restockProduct() {
         System.out.print("Enter Product ID to restock: ");
         String productId = scanner.nextLine().trim();
-        
+
         for (Product product : inventory) {
             if (product.getProductId().equalsIgnoreCase(productId)) {
                 int amount = getIntInput("Enter Restock Amount: ");
@@ -112,7 +132,6 @@ public class SupermarketInventory {
         System.out.println("Product not found.");
     }
 
-    // Check if entered date is in the future
     private static boolean isValidFutureDate(String dateStr) {
         try {
             LocalDate date = LocalDate.parse(dateStr);
@@ -122,41 +141,29 @@ public class SupermarketInventory {
         }
     }
 
-    // Get price with specific format
     private static double getValidatedPrice(String message) {
         System.out.print(message);
         while (true) {
-            try {
-                String input = scanner.nextLine().trim().replace(",", ".");
-                
-                // Create DecimalFormat to allow only 2 decimal places
-                DecimalFormat df = new DecimalFormat("#.##");
-                df.setDecimalSeparatorAlwaysShown(true);
-                
-                // Try to parse the input with DecimalFormat
-                Number number = df.parse(input);
-                double price = number.doubleValue();
+            String input = scanner.nextLine().trim().replace(",", ".");
 
-                // Check if the input had more than two decimals
-                String formattedInput = df.format(price);
-                if (!input.equals(formattedInput)) {
-                    System.out.println("Price cannot have more than two decimal places. Please enter a valid price.");
-                    continue; // Prompt the user again if more than two decimals
-                }
-                
-                // Check if the price is positive
-                if (price > 0) {
-                    return price;
-                } else {
+            if (input.contains(".") && input.split("\\.")[1].length() > 2) {
+                System.out.println("Price cannot have more than two decimal places. Please enter a valid price.");
+                continue;
+            }
+
+            try {
+                double price = Double.parseDouble(input);
+                if (price <= 0) {
                     System.out.print("Price must be positive. " + message);
+                    continue;
                 }
-            } catch (Exception e) {
+                return price;
+            } catch (NumberFormatException e) {
                 System.out.print("Invalid input. Please enter a valid price: ");
             }
         }
     }
 
-    //  Get a validated integer input within a range
     private static int getIntInput(int min, int max) {
         int input;
         while (true) {
@@ -173,7 +180,6 @@ public class SupermarketInventory {
         }
     }
 
-    // Overloaded method for general integer input
     private static int getIntInput(String message) {
         System.out.print(message);
         while (true) {
