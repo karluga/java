@@ -1,3 +1,4 @@
+import java.time.LocalDate;
 
 abstract class Product {
     protected String productId;
@@ -9,16 +10,18 @@ abstract class Product {
         this.productId = productId.trim();
         this.name = name.trim();
         this.price = price;
-        this.quantity = Math.max(quantity, 0); // Ensures quantity is non-negative
+        this.quantity = quantity;
     }
 
     public abstract String getProductInfo();
+
     public void setQuantity(int quantity) {
         if (quantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative.");
         }
         this.quantity = quantity;
     }
+
     public void restock(int amount) {
         if (amount > 0) {
             quantity += amount;
@@ -49,16 +52,25 @@ class PerishableProduct extends Product {
 }
 
 class NonPerishableProduct extends Product {
-    private String warrantyPeriod;
+    private LocalDate warrantyStart;
+    private LocalDate warrantyEnd;
 
-    public NonPerishableProduct(String productId, String name, double price, int quantity, String warrantyPeriod) {
+    public NonPerishableProduct(String productId, String name, double price, int quantity, LocalDate warrantyStart, LocalDate warrantyEnd) {
         super(productId, name, price, quantity);
-        this.warrantyPeriod = warrantyPeriod;
+        this.warrantyStart = warrantyStart;
+        this.warrantyEnd = warrantyEnd;
     }
 
     @Override
     public String getProductInfo() {
-        return "Non-Perishable Product [ID: " + productId + ", Name: " + name + ", Price: " + String.format("%.2f", price).replace(".", ",") + 
-               ", Quantity: " + quantity + ", Warranty Period: " + warrantyPeriod + "]";
+        String info = "Non-Perishable Product [ID: " + productId + ", Name: " + name + ", Price: " + String.format("%.2f", price).replace(".", ",") + 
+                      ", Quantity: " + quantity;
+        
+        if (warrantyStart != null && warrantyEnd != null) {
+            info += ", Warranty Period: " + warrantyStart + " to " + warrantyEnd;
+        }
+        
+        info += "]";
+        return info;
     }
 }
