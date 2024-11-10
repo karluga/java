@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.util.InputMismatchException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 
@@ -64,22 +63,35 @@ public class SupermarketInventory {
         String name = scanner.nextLine();
         double price = getValidatedPrice("Enter Price: ");
         int quantity = getIntInput("Enter Quantity: ");
-
-        String warrantyMonths;
+    
+        LocalDate warrantyStart = null;
+        LocalDate warrantyEnd = null;
+    
         while (true) {
-            int months = getIntInput("Enter Warranty Period (months): ");
-            warrantyMonths = LocalDate.now().plusMonths(months).toString();
-            if (LocalDate.parse(warrantyMonths).isAfter(LocalDate.now())) {
+            System.out.print("Enter Warranty Period (months, or leave empty for no warranty): ");
+            String warrantyInput = scanner.nextLine().trim();
+            if (warrantyInput.isEmpty()) {
                 break;
             } else {
-                System.out.println("Invalid warranty period. Warranty must be valid for future use.");
+                try {
+                    int months = Integer.parseInt(warrantyInput);
+                    if (months > 0) {
+                        warrantyStart = LocalDate.now();
+                        warrantyEnd = warrantyStart.plusMonths(months);
+                        break;
+                    } else {
+                        System.out.println("Warranty period must be a positive number. Please enter a valid warranty period.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a valid number for the warranty period.");
+                }
             }
         }
-
-        inventory.add(new NonPerishableProduct(productId, name, price, quantity, warrantyMonths + " months"));
+    
+        inventory.add(new NonPerishableProduct(productId, name, price, quantity, warrantyStart, warrantyEnd));
         System.out.println("Non-perishable product added.");
     }
-
+    
     private static String getUniqueProductId() {
         String productId;
         while (true) {
@@ -120,7 +132,6 @@ public class SupermarketInventory {
         for (Product product : inventory) {
             if (product.getProductId().equalsIgnoreCase(productId)) {
                 int amount = getIntInput("Enter Restock Amount: ");
-                // Check if the entered amount is negative and prompt again
                 while (amount < 0) {
                     System.out.println("Restock amount cannot be negative. Please enter a valid restock amount.");
                     amount = getIntInput("Enter Restock Amount: ");
