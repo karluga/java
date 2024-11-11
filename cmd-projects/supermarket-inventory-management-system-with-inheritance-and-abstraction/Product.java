@@ -21,7 +21,7 @@ abstract class Product {
         if (quantity < 0) {
             throw new IllegalArgumentException("Quantity cannot be negative.");
         }
-        this.quantity = quantity;
+        this.quantity = quantity; 
     }
 
     public void restock(int amount) {
