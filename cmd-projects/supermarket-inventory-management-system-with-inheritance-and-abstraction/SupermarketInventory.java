@@ -142,7 +142,7 @@ public class SupermarketInventory {
         }
         System.out.println("Product not found.");
     }
-
+    // Check if the provided date is in the future
     private static boolean isValidFutureDate(String dateStr) {
         try {
             LocalDate date = LocalDate.parse(dateStr);
@@ -151,7 +151,7 @@ public class SupermarketInventory {
             return false;
         }
     }
-
+    // Allows both comma and dot as decimal separator
     private static double getValidatedPrice(String message) {
         System.out.print(message);
         while (true) {
@@ -175,6 +175,7 @@ public class SupermarketInventory {
         }
     }
 
+    // Gets an integer input within a specified range
     private static int getIntInput(int min, int max) {
         int input;
         while (true) {
@@ -190,7 +191,7 @@ public class SupermarketInventory {
             }
         }
     }
-
+    // Overloaded method
     private static int getIntInput(String message) {
         System.out.print(message);
         while (true) {
