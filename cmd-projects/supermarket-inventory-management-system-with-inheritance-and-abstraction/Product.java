@@ -29,7 +29,7 @@ abstract class Product {
             quantity += amount;
             System.out.println("Restocked " + amount + " units. Total quantity: " + quantity);
         } else {
-            System.out.println("Invalid restock amount.");
+            System.out.println("Invalid restock amount."); //wefw
         }
     }
 
