@@ -1,5 +1,7 @@
 import java.time.LocalDate;
 
+// Abstract class for a generic product
+
 abstract class Product {
     protected String productId;
     protected String name;
@@ -36,6 +38,8 @@ abstract class Product {
     }
 }
 
+// Perishable products are items that have a limited shelf life and may spoil over time, so they include an expiry date 
+// (like food items, dairy products)
 class PerishableProduct extends Product {
     private String expiryDate;
 
@@ -44,13 +48,13 @@ class PerishableProduct extends Product {
         this.expiryDate = expiryDate;
     }
 
-    @Override
     public String getProductInfo() {
         return "Perishable Product [ID: " + productId + ", Name: " + name + ", Price: " + String.format("%.2f", price).replace(".", ",") + 
                ", Quantity: " + quantity + ", Expiry Date: " + expiryDate + "]";
     }
 }
-
+// Non-perishable products do not spoil or have a long shelf life, and instead may have a warranty period
+// (like electronics, appliances)
 class NonPerishableProduct extends Product {
     private LocalDate warrantyStart;
     private LocalDate warrantyEnd;
@@ -61,7 +65,6 @@ class NonPerishableProduct extends Product {
         this.warrantyEnd = warrantyEnd;
     }
 
-    @Override
     public String getProductInfo() {
         String info = "Non-Perishable Product [ID: " + productId + ", Name: " + name + ", Price: " + String.format("%.2f", price).replace(".", ",") + 
                       ", Quantity: " + quantity;
