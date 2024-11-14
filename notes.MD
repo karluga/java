@@ -1,5 +1,7 @@
 # If vscode throws `ClassNotFoundException` when running
-CTRL+P
+# Also for Class cannot be resolved to a type
+# Or whenever code doesnt compile but code is good
+CTRL+P/F1
 ```
 >Java: Clean the Java language server workspace
 ```
