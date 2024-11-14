@@ -1,7 +1,6 @@
 
 import java.util.ArrayList;
 import java.util.Scanner;
-import Employee;
 public class SalarySystem {
     private static ArrayList<Employee> employees = new ArrayList<>();
     private static Scanner scanner = new Scanner(System.in);
@@ -116,6 +115,6 @@ public class SalarySystem {
             String contractType = (employee instanceof FullTimeEmployee || employee instanceof PartTimeEmployee)
                                   ? "Seasonal Contract" : "Annual Contract";
             System.out.println(employee + " - " + contractType);
-        }
+        }    
     }
 }
