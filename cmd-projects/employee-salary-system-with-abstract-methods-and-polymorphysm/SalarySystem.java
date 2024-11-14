@@ -15,7 +15,7 @@ public class SalarySystem {
             System.out.println("5. Exit");
             System.out.print("Choose option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
             switch (choice) {
                 case 1:
@@ -46,7 +46,7 @@ public class SalarySystem {
         System.out.println("4. Base Employee with Commission");
         System.out.print("Choose type of employee to register: ");
         int type = scanner.nextInt();
-        scanner.nextLine(); // Consume newline
+        scanner.nextLine();
 
         System.out.print("Enter first name: ");
         String firstName = scanner.nextLine();
