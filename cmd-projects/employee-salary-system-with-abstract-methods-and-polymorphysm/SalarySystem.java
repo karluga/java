@@ -82,9 +82,7 @@ public class SalarySystem {
                 double baseTotalSales = scanner.nextDouble();
                 System.out.print("Enter commission rate (as decimal): ");
                 double baseCommissionRate = scanner.nextDouble();
-                System.out.print("Enter bonus: ");
-                double bonus = scanner.nextDouble();
-                employees.add(new BaseCommissionEmployee(firstName, lastName, ssn, baseSalary, baseTotalSales, baseCommissionRate, bonus));
+                employees.add(new BaseCommissionEmployee(firstName, lastName, ssn, baseSalary, baseTotalSales, baseCommissionRate));
                 break;
             default:
                 System.out.println("Invalid type. Returning to main menu.");
