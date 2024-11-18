@@ -10,9 +10,9 @@ class BaseCommissionEmployee extends Employee {
         this.totalSales = totalSales;
         this.commissionRate = commissionRate;
     }
-    
+
     @Override
     public double income() {
         return baseSalary + (totalSales * commissionRate) + (BONUS_RATE * baseSalary);
-    }    
+    }
 }
