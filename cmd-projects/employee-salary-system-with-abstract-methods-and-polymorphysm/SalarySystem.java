@@ -23,7 +23,7 @@ class SalarySystem {
                 case 2 -> printEmployeeData();
                 case 3 -> printByPosition();
                 case 4 -> printByContract();
-                case 5 -> editEmployee(); // Add edit employee option
+                case 5 -> editEmployee(); // Added edit employee option
                 case 6 -> {
                     System.out.println("Exiting...");
                     return;
