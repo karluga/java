@@ -32,3 +32,35 @@ Runtime polymorphysm (late binding): JVM decides which method to call
 Reference variable of a parent class that points to a child class 
 Parent class cannot use the methods of child class
 The logic which method to call if The type of the object was referenced by a superclass or subclass
+
+super keyword - can call the parent constructor and methods
+this keyword - refers to the current class
+
+static initialization block (always executed first)
+instance initialization block
+
+final keyword
+ - similar to constant
+ - final classes cannot be inherited
+ - cannot overrife final methods
+
+## LINKED LIST
+### Generic type
+advantages - type safety
+#### Casting
+- imlicit casting (int to double - no data loss because smaller data type -> bigger data type)
+- explicit casting (double to int - data loss because bigger data type -> smaller data type)
+
+
+## Autoboxing & Unboxing in Java?
+
+HASHMAP
+## ENUM
+Contains a fixed set of constants, ex. days of the week
+Is both a data type and a class
+
+
+## GENERIC TYPES
+Advantages
+- Type safe
+- Reusable
