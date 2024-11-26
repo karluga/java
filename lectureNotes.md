@@ -45,8 +45,8 @@ final keyword
  - cannot overrife final methods
 
 ## LINKED LIST
-### Generic type
-advantages - type safety
+### Generic types
+advantages - type safety, reusable
 #### Casting
 - imlicit casting (int to double - no data loss because smaller data type -> bigger data type)
 - explicit casting (double to int - data loss because bigger data type -> smaller data type)
@@ -58,9 +58,3 @@ HASHMAP
 ## ENUM
 Contains a fixed set of constants, ex. days of the week
 Is both a data type and a class
-
-
-## GENERIC TYPES
-Advantages
-- Type safe
-- Reusable

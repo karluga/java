@@ -3,6 +3,9 @@ import java.util.Scanner;
 
 public class Main {
     private static final Scanner scanner = new Scanner(System.in);
+
+    // Using a generic `ArrayList` to store ticket prices
+    // Generic types allow type safety and reusability
     private static final ArrayList<Double> ticketPrices = new ArrayList<>();
 
     public static void main(String[] args) {
@@ -19,7 +22,7 @@ public class Main {
             System.out.println("9. Apply Discount to Specific Index");
             System.out.println("10. Exit");
             System.out.print("Choose an option: ");
-            
+
             try {
                 int option = scanner.nextInt();
                 switch (option) {
@@ -45,13 +48,14 @@ public class Main {
         }
     }
 
-    // Method to add a ticket price
+    // Add a ticket price
+    // Demonstrates autoboxing: the primitive `double` is automatically converted to `Double`
     private static void addTicketPrice() {
         try {
             System.out.print("Enter ticket price to add: ");
             double price = scanner.nextDouble();
             if (price < 0) throw new IllegalArgumentException("Price cannot be negative.");
-            ticketPrices.add(price);
+            ticketPrices.add(price); // Autoboxing occurs here
             System.out.println("Ticket price added.");
         } catch (Exception e) {
             System.out.println("Invalid input! Please enter a valid number.");
@@ -59,7 +63,7 @@ public class Main {
         }
     }
 
-    // Method to update a ticket price
+    // Update a ticket price
     private static void updateTicketPrice() {
         try {
             System.out.print("Enter the index of the ticket price to update: ");
@@ -68,75 +72,87 @@ public class Main {
             System.out.print("Enter the new ticket price: ");
             double newPrice = scanner.nextDouble();
             if (newPrice < 0) throw new IllegalArgumentException("Price cannot be negative.");
-            ticketPrices.set(index, newPrice);
+            ticketPrices.set(index, newPrice); // Replacing value at index
             System.out.println("Ticket price updated.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    // Method to delete a ticket price
+    // Delete a ticket price
     private static void deleteTicketPrice() {
         try {
             System.out.print("Enter the index of the ticket price to delete: ");
             int index = scanner.nextInt();
             validateIndex(index);
-            ticketPrices.remove(index);
+            ticketPrices.remove(index); // Removes the element at the specified index
             System.out.println("Ticket price deleted.");
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
-    // Method to list ticket prices
+    // List all ticket prices
     private static void listTicketPrices() {
         if (ticketPrices.isEmpty()) {
             System.out.println("No ticket prices available.");
         } else {
             System.out.println("Ticket Prices:");
             for (int i = 0; i < ticketPrices.size(); i++) {
-                System.out.println(i + ": $" + ticketPrices.get(i));
+                System.out.println(i + ": $" + ticketPrices.get(i)); // Unboxing occurs here
             }
         }
     }
 
-    // Method to calculate total sales
+    // Calculate total sales
+    // Stream API processes data efficiently by converting `Double` to primitive `double` (unboxing)
     private static void calculateTotalSales() {
-        double total = ticketPrices.stream().mapToDouble(Double::doubleValue).sum();
+        double total = ticketPrices.stream()
+            .mapToDouble(Double::doubleValue) // Unboxing for numeric operations
+            .sum();
         System.out.println("Total Sales: $" + total);
     }
 
-    // Method to calculate average price
+    // Calculate average price
     private static void calculateAveragePrice() {
         if (ticketPrices.isEmpty()) {
             System.out.println("No ticket prices available to calculate average.");
         } else {
-            double average = ticketPrices.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+            double average = ticketPrices.stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0); // Default value if no elements
             System.out.println("Average Ticket Price: $" + average);
         }
     }
 
-    // Method to find maximum price
+    // Find maximum price
     private static void findMaxPrice() {
         if (ticketPrices.isEmpty()) {
             System.out.println("No ticket prices available to find maximum.");
         } else {
-            double max = ticketPrices.stream().mapToDouble(Double::doubleValue).max().orElse(0.0);
+            double max = ticketPrices.stream()
+                .mapToDouble(Double::doubleValue)
+                .max()
+                .orElse(0.0);
             System.out.println("Maximum Ticket Price: $" + max);
         }
     }
 
-    // Method to find minimum price
+    // Find minimum price
     private static void findMinPrice() {
         if (ticketPrices.isEmpty()) {
             System.out.println("No ticket prices available to find minimum.");
         } else {
-            double min = ticketPrices.stream().mapToDouble(Double::doubleValue).min().orElse(0.0);
+            double min = ticketPrices.stream()
+                .mapToDouble(Double::doubleValue)
+                .min()
+                .orElse(0.0);
             System.out.println("Minimum Ticket Price: $" + min);
         }
     }
 
-    // Method to apply a discount to an index
+    // Apply a discount to a specific ticket price
     private static void applyDiscountToIndex() {
         try {
             System.out.print("Enter the index of the ticket price to apply a discount: ");
@@ -147,7 +163,7 @@ public class Main {
             double discount = scanner.nextDouble();
             if (discount < 0 || discount > 100) throw new IllegalArgumentException("Discount must be between 0 and 100.");
 
-            double originalPrice = ticketPrices.get(index);
+            double originalPrice = ticketPrices.get(index); // Unboxing
             double discountedPrice = originalPrice * (1 - discount / 100);
 
             System.out.println("Original Price: $" + originalPrice);
@@ -156,7 +172,7 @@ public class Main {
             System.out.print("Do you want to keep the changes? (y/n): ");
             String choice = scanner.next();
             if (choice.equalsIgnoreCase("y")) {
-                ticketPrices.set(index, discountedPrice);
+                ticketPrices.set(index, discountedPrice); // Replacing with discounted value
                 System.out.println("Discount applied and changes saved.");
             } else {
                 System.out.println("Changes discarded.");
@@ -167,7 +183,7 @@ public class Main {
         }
     }
 
-    // Helper method
+    // Helper method to validate an index before accessing the list
     private static void validateIndex(int index) {
         if (index < 0 || index >= ticketPrices.size()) {
             throw new IllegalArgumentException("Invalid index! Please choose a valid index.");
