@@ -58,3 +58,13 @@ HASHMAP
 ## ENUM
 Contains a fixed set of constants, ex. days of the week
 Is both a data type and a class
+
+## Java environment variables
+### Tools
+-Jasypt
+
+## Data structures
+-Array List (dynamic) costs resources
+When the memory runs out to store values, it finds a free space in the memory, creates a larger array list, moves the values there and garbage collector deletes the old list.
+-Linked List
+-HashMap
