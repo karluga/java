@@ -1,5 +1,5 @@
 // Utility Class for Input Validation
-// Adheres to DRY: Reuses validation logic throughout the program.
+// Uses DRY: Reuses validation logic in many places
 class InputValidator {
     // Ensures string inputs are not null or empty.
     public static boolean isStringValid(String input) {

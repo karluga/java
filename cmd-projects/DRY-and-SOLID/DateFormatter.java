@@ -1,5 +1,5 @@
 // Utility Class for Date Formatting
-// Adheres to DRY: Centralized logic for date operations, ensuring consistency.
+// Uses DRY
 class DateFormatter {
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 

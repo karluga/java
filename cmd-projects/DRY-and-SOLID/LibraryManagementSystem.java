@@ -1,9 +1,9 @@
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.*; // Map, HashMap, Scanner
 
 // Main Class
-// Adheres to Dependency Inversion Principle: Depends on abstraction (LibraryService), not implementation.
+// Uses Dependency Inversion Principle (DIP)
 public class LibraryManagementSystem {
     public static void main(String[] args) {
         LibraryService libraryService = new LibraryService();
@@ -20,15 +20,16 @@ public class LibraryManagementSystem {
             System.out.println("7. Exit");
             System.out.print("Choose an option: ");
             int choice = scanner.nextInt();
-            scanner.nextLine(); // Consume newline
+            scanner.nextLine();
 
+            // Every option delegates to LibraryService
             switch (choice) {
                 case 1 -> {
                     System.out.print("Enter book title: ");
                     String title = scanner.nextLine();
                     System.out.print("Enter book author: ");
                     String author = scanner.nextLine();
-                    libraryService.addBook(title, author); // Delegates to LibraryService.
+                    libraryService.addBook(title, author);
                 }
                 case 2 -> {
                     System.out.print("Enter book ID to update: ");
@@ -38,27 +39,27 @@ public class LibraryManagementSystem {
                     String title = scanner.nextLine();
                     System.out.print("Enter new author: ");
                     String author = scanner.nextLine();
-                    libraryService.updateBook(id, title, author); // Delegates to LibraryService.
+                    libraryService.updateBook(id, title, author);
                 }
                 case 3 -> {
                     System.out.print("Enter book ID to delete: ");
                     int id = scanner.nextInt();
-                    libraryService.deleteBook(id); // Delegates to LibraryService.
+                    libraryService.deleteBook(id);
                 }
                 case 4 -> {
                     System.out.print("Enter book ID to borrow: ");
                     int id = scanner.nextInt();
-                    libraryService.borrowBook(id); // Delegates to LibraryService.
+                    libraryService.borrowBook(id);
                 }
                 case 5 -> {
                     System.out.print("Enter book ID to return: ");
                     int id = scanner.nextInt();
-                    libraryService.returnBook(id); // Delegates to LibraryService.
+                    libraryService.returnBook(id);
                 }
                 case 6 -> {
                     System.out.print("Enter keyword to search: ");
                     String keyword = scanner.nextLine();
-                    libraryService.searchBooks(keyword); // Delegates to LibraryService.
+                    libraryService.searchBooks(keyword);
                 }
                 case 7 -> {
                     System.out.println("Exiting system. Goodbye!");
