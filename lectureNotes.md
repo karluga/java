@@ -69,3 +69,23 @@ When the memory runs out to store values, it finds a free space in the memory, c
 -Linked List
 -HashMap
 
+## Coding principles
+
+DRY (Don’t Repeat Yourself)
+Avoid code duplication by reusing logic and components.
+
+SOLID Principles
+S - Single Responsibility (SRP)
+Each class has one job only.
+
+O - Open/Closed
+Open for extension, closed for modification.
+
+L - Liskov Substitution (LSP)
+Subclasses can replace parent classes without breaking the app.
+
+I - Interface Segregation (ISP)
+Use smaller, specific interfaces instead of one large one.
+
+D - Dependency Inversion (DIP)
+Depend on abstractions, not concrete implementations.
