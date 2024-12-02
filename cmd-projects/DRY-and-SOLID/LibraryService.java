@@ -58,10 +58,9 @@ class LibraryService {
         }
     }
 
-    // Searches for books by a keyword in the title or author.
+    // Searches by keyword in the title or author.
     public void searchBooks(String keyword) {
         boolean found = false;
-        // DRY: Common search logic ensures consistency across all searches.
         for (Book book : books.values()) {
             if (book.getTitle().toLowerCase().contains(keyword.toLowerCase()) ||
                 book.getAuthor().toLowerCase().contains(keyword.toLowerCase())) {
