@@ -1,12 +1,11 @@
 // LibraryService Class
-// Adheres to SRP: Focuses solely on managing library operations.
+// Uses Single Responsibility Principle (SRP): Focuses on managing library operations.
 class LibraryService {
     private final Map<Integer, Book> books = new HashMap<>();
     private int bookCounter = 1; // Keeps track of unique book IDs.
 
     // Adds a new book to the library.
     public void addBook(String title, String author) {
-        // DRY: Reuses validation logic to ensure title and author are valid.
         if (InputValidator.isStringValid(title) && InputValidator.isStringValid(author)) {
             Book book = new Book(bookCounter++, title, author);
             books.put(book.getId(), book);
@@ -20,7 +19,6 @@ class LibraryService {
     public void updateBook(int id, String title, String author) {
         Book book = books.get(id);
         if (book != null) {
-            // DRY: Reuses validation logic in setters within the Book class.
             book.setTitle(title);
             book.setAuthor(author);
             System.out.println("Book updated successfully: " + book);

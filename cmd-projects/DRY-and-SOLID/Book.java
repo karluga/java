@@ -1,5 +1,5 @@
 // Book Class
-// Single Responsibility Principle (SRP): Manages book-specific data and behavior only.
+// Single Responsibility Principle (SRP): Manages only book actions
 class Book {
     private final int id;
     private String title;
@@ -10,10 +10,10 @@ class Book {
         this.id = id;
         this.title = title;
         this.author = author;
-        this.isAvailable = true; // Books are available by default.
+        this.isAvailable = true; // Books are available by default
     }
 
-    // Getters and setters allow controlled access to book properties.
+    // Getters and setters for controlled access to book properties
     public int getId() {
         return id;
     }
@@ -23,7 +23,6 @@ class Book {
     }
 
     public void setTitle(String title) {
-        // DRY: Reuses validation logic from InputValidator.
         if (InputValidator.isStringValid(title)) {
             this.title = title;
         }
@@ -34,7 +33,6 @@ class Book {
     }
 
     public void setAuthor(String author) {
-        // DRY: Reuses validation logic from InputValidator.
         if (InputValidator.isStringValid(author)) {
             this.author = author;
         }
@@ -50,7 +48,6 @@ class Book {
 
     @Override
     public String toString() {
-        // Provides a readable string representation of the book.
         return "Book ID: " + id + ", Title: " + title + ", Author: " + author +
                 ", Available: " + (isAvailable ? "Yes" : "No");
     }

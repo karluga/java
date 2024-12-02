@@ -68,3 +68,4 @@ Is both a data type and a class
 When the memory runs out to store values, it finds a free space in the memory, creates a larger array list, moves the values there and garbage collector deletes the old list.
 -Linked List
 -HashMap
+
