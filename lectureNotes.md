@@ -78,7 +78,7 @@ SOLID Principles
 S - Single Responsibility (SRP)
 Each class has one job only.
 
-O - Open/Closed
+O - Open/Closed (OCP)
 Open for extension, closed for modification.
 
 L - Liskov Substitution (LSP)
@@ -86,6 +86,12 @@ Subclasses can replace parent classes without breaking the app.
 
 I - Interface Segregation (ISP)
 Use smaller, specific interfaces instead of one large one.
+- split concerns in an interface
+- multiple abstract methods assigned to a class should be separated by interfaces
+
 
 D - Dependency Inversion (DIP)
 Depend on abstractions, not concrete implementations.
+
+## File processing
+### CSV JSON XML
