@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="284.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="application.K">
+   <children>
+      <TableView fx:id="tblEmployee" layoutX="30.0" layoutY="32.0" prefHeight="200.0" prefWidth="234.0">
+        <columns>
+          <TableColumn fx:id="clmname" prefWidth="75.0" text="Name" />
+          <TableColumn fx:id="clmage" prefWidth="75.0" text="Age" />
+            <TableColumn fx:id="clmposition" prefWidth="75.0" text="Position" />
+        </columns>
+      </TableView>
+      <TextField fx:id="txtname" layoutX="274.0" layoutY="101.0" prefHeight="25.0" prefWidth="157.0" promptText="insert name..." />
+      <TextField fx:id="txtage" layoutX="274.0" layoutY="136.0" prefHeight="25.0" prefWidth="157.0" promptText="insert age..." />
+      <TextField fx:id="txtposition" layoutX="274.0" layoutY="170.0" prefHeight="25.0" prefWidth="157.0" promptText="insert position..." />
+      <Button fx:id="add" layoutX="274.0" layoutY="207.0" mnemonicParsing="false" text="Add" />
+      <Button fx:id="delete" layoutX="319.0" layoutY="207.0" mnemonicParsing="false" text="Delete" />
+      <Button fx:id="update" layoutX="379.0" layoutY="207.0" mnemonicParsing="false" text="Update" />
+      <Label fx:id="lblid" layoutX="286.0" layoutY="52.0" opacity="0.0" text="Label" visible="false" />
+   </children>
+</AnchorPane>

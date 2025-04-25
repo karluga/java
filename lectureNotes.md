@@ -95,3 +95,19 @@ Depend on abstractions, not concrete implementations.
 
 ## File processing
 ### CSV JSON XML
+
+## Functional interfaces**
+- Interface that contains only one abstract method
+- Predicate: always boolean as return type
+- Function: requires input, returns output
+- Suplier: doesnt require input, returns output
+- Consumer: requires input, doesnt return anything
+## Lambda expressions**
+- used with functional interfaces to implement the abstract method 
+
+## Streams 
+- a set of operations that are applied to a source of data
+- (list, file, database)
+- Stream Interface, Intermediate Operations, Terminal Operations, Collectors
+- Does not affect the source data. Need a new structure to use output (collectors)
+## Method references

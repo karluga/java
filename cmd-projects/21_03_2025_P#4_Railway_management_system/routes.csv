@@ -1,0 +1,15 @@
+1,Riga;08:00,Daugavpils;10:30,Liepaja;13:00
+2,Riga;09:00,Ventspils;11:15,Liepaja;14:00
+3,Daugavpils;07:30,Riga;09:45,Ventspils;12:20
+4,Liepaja;06:45,Ventspils;08:30,Riga;11:00
+5,Ventspils;10:15,Daugavpils;13:45,Liepaja;16:20
+6,Riga;07:00,Ventspils;09:45,Liepaja;12:30
+7,Daugavpils;06:15,Riga;08:45,Liepaja;11:30
+8,Ventspils;09:00,Liepaja;11:00,Riga;13:30
+9,Liepaja;07:45,Daugavpils;10:15,Ventspils;13:00
+10,Riga;08:30,Liepaja;11:00,Daugavpils;13:45
+11,Ventspils;06:30,Riga;09:15,Daugavpils;12:00
+12,Daugavpils;07:45,Liepaja;10:30,Riga;13:15
+13,Liepaja;08:15,Riga;10:45,Ventspils;13:30
+14,Riga;09:30,Ventspils;12:15,Daugavpils;15:00
+15,Liepaja;06:30,Daugavpils;09:15,Riga;12:00

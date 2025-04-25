@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.BookingController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <TextField fx:id="nameField" promptText="Customer Name"/>
+    <ComboBox fx:id="roomComboBox" promptText="Select Room"/>
+    <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+    <DatePicker fx:id="endDatePicker" promptText="End Date"/>
+    <Button text="Submit Booking" onAction="#handleBooking"/>
+    <Label fx:id="statusLabel"/>
+</VBox>

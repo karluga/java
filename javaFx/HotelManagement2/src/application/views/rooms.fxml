@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+    <?import javafx.scene.layout.*?>
+    
+    <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.RoomController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+        <Label text="Available Rooms"/>
+        <TextField fx:id="searchField" promptText="Search Rooms" onAction="#handleSearch"/>
+        <Button text="Search" onAction="#handleSearch"/>
+        <TableView fx:id="roomTable" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="roomNameCol" text="Room Name" prefWidth="150"/>
+            </columns>
+        </TableView>
+    
+        <Label text="Reservations"/>
+        <TableView fx:id="reservationsTable" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="reservedNameCol" text="Room Name" prefWidth="150"/>
+                <TableColumn fx:id="reservedByCol" text="Reserved By" prefWidth="100"/>
+                <TableColumn fx:id="fromCol" text="From" prefWidth="100"/>
+                <TableColumn fx:id="toCol" text="To" prefWidth="100"/>
+            </columns>
+        </TableView>
+    
+        <HBox spacing="10">
+            <TextField fx:id="newRoomField" promptText="New Room Name"/>
+            <Button fx:id="addRoomButton" text="Add Room" onAction="#handleAddRoom"/>
+        </HBox>
+    
+        <HBox spacing="10">
+            <ComboBox fx:id="userComboBox" promptText="Select User" prefWidth="150" editable="true"/>
+            <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+            <DatePicker fx:id="endDatePicker" promptText="End Date"/>
+            <Button fx:id="addToReservationBtn" text="Add to Reservation"/>
+            <Label fx:id="statusLabel"/>
+        </HBox>
+    </VBox>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.BookingController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <!-- <TextField fx:id="searchField" promptText="Search Bookings" onAction="#handleSearch"/> -->
+    <!-- <Button text="Search" onAction="#handleSearch"/> -->
+    <TableView fx:id="bookingTable" prefHeight="200">
+        <columns>
+            <TableColumn fx:id="roomNameCol" text="Room Name" prefWidth="150"/>
+            <TableColumn fx:id="customerNameCol" text="Customer Name" prefWidth="150"/>
+            <TableColumn fx:id="startDateCol" text="Start Date" prefWidth="100"/>
+            <TableColumn fx:id="endDateCol" text="End Date" prefWidth="100"/>
+        </columns>
+    </TableView>
+    <ComboBox fx:id="roomComboBox" promptText="Select Room"/>
+    <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+    <DatePicker fx:id="endDatePicker" promptText="End Date"/>
+    <Slider fx:id="peopleSlider" min="1" max="10" value="1" majorTickUnit="1" minorTickCount="0" snapToTicks="true"/>
+    <Button text="Submit Booking" onAction="#handleBooking"/>
+    <Label fx:id="statusLabel"/>
+</VBox>
