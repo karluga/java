@@ -72,24 +72,52 @@ public class Room {
         return false;
     }
     
-    public boolean addReservation(LocalDate startDate, LocalDate endDate, String customerName, int numberOfPeople, int userId) {
-        if (!isAvailable(startDate, endDate)) {
-            return false;
-        }
-        String query = "INSERT INTO bookings (room_id, customer_name, start_date, end_date, number_of_people, user_id) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection connection = DBConnection.getConnection();
-             PreparedStatement stmt = connection.prepareStatement(query)) {
-                stmt.setInt(1, this.id);
-                stmt.setString(2, customerName);
-                stmt.setString(3, startDate.toString());
-                stmt.setString(4, endDate.toString());
-                stmt.setInt(5, numberOfPeople);
-                stmt.setInt(6, userId);
-                stmt.executeUpdate();
-            return true;
+    public boolean addReservation(LocalDate start, LocalDate end, String customerName, int numberOfPeople, int userId) {
+        String query = """
+            SELECT COUNT(*) AS count
+            FROM bookings
+            WHERE room_id = ? AND (
+                (start_date <= ? AND end_date >= ?) OR
+                (start_date <= ? AND end_date >= ?) OR
+                (start_date >= ? AND end_date <= ?)
+            )
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, this.id); // Room ID
+            stmt.setObject(2, start);
+            stmt.setObject(3, start);
+            stmt.setObject(4, end);
+            stmt.setObject(5, end);
+            stmt.setObject(6, start);
+            stmt.setObject(7, end);
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next() && rs.getInt("count") > 0) {
+                return false; // Time slot unavailable
+            }
+
+            // Insert the reservation
+            String insertQuery = """
+                INSERT INTO bookings (room_id, customer_name, start_date, end_date, number_of_people, user_id, is_paid, total_price)
+                VALUES (?, ?, ?, ?, ?, ?, FALSE, ?)
+            """;
+            try (PreparedStatement insertStmt = conn.prepareStatement(insertQuery)) {
+                insertStmt.setInt(1, this.id);
+                insertStmt.setString(2, customerName);
+                insertStmt.setObject(3, start);
+                insertStmt.setObject(4, end);
+                insertStmt.setInt(5, numberOfPeople);
+                insertStmt.setInt(6, userId);
+                insertStmt.setDouble(7, this.pricePerNight * (end.toEpochDay() - start.toEpochDay() + 1));
+                insertStmt.executeUpdate();
+            }
+
+            return true; // Reservation successful
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return false; // Reservation failed due to an error
         }
     }
 }

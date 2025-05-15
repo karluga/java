@@ -1,39 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
-    <?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.RoomController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
+    <!-- Navigation Buttons -->
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <Button text="Back to Login" onAction="#handleBackToLogin"/>
+        <Button text="View My Reservations" onAction="#handleViewMyReservations"/>
+    </HBox>
+
+    <Label text="Available Rooms"/>
+    <TextField fx:id="searchField" promptText="Search Rooms" onAction="#handleSearch"/>
+    <Button text="Search" onAction="#handleSearch"/>
+    <TableView fx:id="roomTable" prefHeight="200">
+        <columns>
+            <TableColumn fx:id="roomNameCol" text="Room Name" prefWidth="150"/>
+            <TableColumn fx:id="roomPriceCol" text="Price Per Night" prefWidth="100"/>
+        </columns>
+    </TableView>
+
+    <!-- Add Room -->
+    <HBox spacing="10">
+        <TextField fx:id="newRoomField" promptText="New Room Name"/>
+        <TextField fx:id="newRoomPriceField" promptText="Price Per Night"/>
+        <Button fx:id="addRoomButton" text="Add Room" onAction="#handleAddRoom"/>
+    </HBox>
+
+    <HBox spacing="10">
+        <ComboBox fx:id="userComboBox" promptText="Select User" prefWidth="150" editable="true"/>
+        <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
+        <DatePicker fx:id="endDatePicker" promptText="End Date"/>
+        <Button fx:id="addToReservationBtn" text="Add to Reservation"/>
+        <Label fx:id="statusLabel"/>
+    </HBox>
     
-    <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.RoomController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
-        <Label text="Available Rooms"/>
-        <TextField fx:id="searchField" promptText="Search Rooms" onAction="#handleSearch"/>
-        <Button text="Search" onAction="#handleSearch"/>
-        <TableView fx:id="roomTable" prefHeight="200">
-            <columns>
-                <TableColumn fx:id="roomNameCol" text="Room Name" prefWidth="150"/>
-                <TableColumn fx:id="roomPriceCol" text="Price" prefWidth="100"/> <!-- New column for price -->
-            </columns>
-        </TableView>
-    
-        <HBox spacing="10">
-            <TextField fx:id="newRoomField" promptText="New Room Name"/>
-            <Button fx:id="addRoomButton" text="Add Room" onAction="#handleAddRoom"/>
-        </HBox>
-    
-        <HBox spacing="10">
-            <ComboBox fx:id="userComboBox" promptText="Select User" prefWidth="150" editable="true"/>
-            <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
-            <DatePicker fx:id="endDatePicker" promptText="End Date"/>
-            <Button fx:id="addToReservationBtn" text="Add to Reservation"/>
-            <Label fx:id="statusLabel"/>
-        </HBox>
-        
-        <Label text="Reservations"/>
-        <TableView fx:id="reservationsTable" prefHeight="200">
-            <columns>
-                <TableColumn fx:id="reservedNameCol" text="Room Name" prefWidth="150"/>
-                <TableColumn fx:id="reservedByCol" text="Reserved By" prefWidth="100"/>
-                <TableColumn fx:id="fromCol" text="From" prefWidth="100"/>
-                <TableColumn fx:id="toCol" text="To" prefWidth="100"/>
-                <TableColumn fx:id="paidCol" text="Paid" prefWidth="100"/> <!-- New column for paid status -->
-            </columns>
-        </TableView>
-    </VBox>
+    <HBox spacing="10" alignment="CENTER_LEFT">
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <Label text="Filter Reservations"/>
+            <TextField fx:id="filterNameField" promptText="Filter by Name"/>
+            <DatePicker fx:id="filterStartDatePicker" promptText="From Date"/>
+            <DatePicker fx:id="filterEndDatePicker" promptText="To Date"/>
+            <CheckBox fx:id="filterUnpaidCheckBox" text="Unpaid Only" selected="true"/>
+            <Button text="Apply Filters" onAction="#handleFilterReservations"/>
+        </VBox>
+        <VBox spacing="10" style="-fx-padding: 10;">
+            <Label text="Reservations"/>
+            <TableView fx:id="reservationsTable" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="reservedNameCol" text="Room Name" prefWidth="150"/>
+                    <TableColumn fx:id="reservedByCol" text="Reserved By" prefWidth="100"/>
+                    <TableColumn fx:id="fromCol" text="From" prefWidth="100"/>
+                    <TableColumn fx:id="toCol" text="To" prefWidth="100"/>
+                    <TableColumn fx:id="paidCol" text="Paid" prefWidth="500"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </HBox>
+</VBox>

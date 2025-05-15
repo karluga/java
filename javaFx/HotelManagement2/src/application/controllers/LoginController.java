@@ -39,17 +39,13 @@ public class LoginController {
             if (rs.next() && PasswordUtil.verifyPassword(pass, rs.getString("password"))) {
                 int role = rs.getInt("role");
                 Main.currentUserId = rs.getInt("id");
-                Main.currentUsername = usernameField.getText();
+                Main.currentUsername = user;
+                Main.currentUserRole = role;
 
                 Main.loginStage.close();
 
                 if (role == 1) { // Admin
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/views/rooms.fxml"));
-                    Parent root = loader.load();
-                    Stage stage = new Stage();
-                    stage.setScene(new Scene(root));
-                    stage.setTitle("Room Management");
-                    stage.show();
+                    Main.mainStage.show(); // Use preloaded stage for admin
                 } else if (role == 0) { // Regular user
                     FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/views/booking.fxml"));
                     Parent root = loader.load();

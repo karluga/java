@@ -14,6 +14,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
     public static Stage loginStage;
     public static Stage mainStage;
+    public static Stage myReservationsStage; // Add a stage for "My Reservations"
     public static RoomController roomController; // Global reference
     public static BookingController bookingController; // Global reference
     public static Integer currentUserId = null;
@@ -35,6 +36,13 @@ public class Main extends Application {
         mainStage = new Stage();
         mainStage.setScene(new Scene(roomRoot));
         mainStage.setTitle("Room Management");
+
+        // Preload MyReservations view
+        FXMLLoader myReservationsLoader = new FXMLLoader(getClass().getResource("/application/views/booking.fxml"));
+        Parent myReservationsRoot = myReservationsLoader.load();
+        myReservationsStage = new Stage();
+        myReservationsStage.setScene(new Scene(myReservationsRoot));
+        myReservationsStage.setTitle("My Reservations");
     }
 
     public static void main(String[] args) throws IOException, SQLException {
