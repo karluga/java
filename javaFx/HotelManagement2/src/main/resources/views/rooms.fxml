@@ -1,1 +1,0 @@
-<ComboBox fx:id="userComboBox" promptText="Select User" prefWidth="150" editable="true"/>

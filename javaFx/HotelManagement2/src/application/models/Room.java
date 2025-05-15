@@ -53,8 +53,10 @@ public class Room {
     }
 
     public boolean isAvailable(LocalDate startDate, LocalDate endDate) {
-        String query = "SELECT COUNT(*) FROM bookings WHERE room_id = ? AND " +
-                       "(start_date <= ? AND end_date >= ?)";
+        String query = """
+            SELECT COUNT(*) FROM bookings WHERE room_id = ? AND
+            (start_date <= ? AND end_date >= ?)        
+        """;
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
             stmt.setInt(1, id);
@@ -76,14 +78,14 @@ public class Room {
         }
         String query = "INSERT INTO bookings (room_id, customer_name, start_date, end_date, number_of_people, user_id) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection connection = DBConnection.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-            preparedStatement.setInt(1, this.id);
-            preparedStatement.setString(2, customerName);
-            preparedStatement.setString(3, startDate.toString());
-            preparedStatement.setString(4, endDate.toString());
-            preparedStatement.setInt(5, numberOfPeople);
-            preparedStatement.setInt(6, userId);
-            preparedStatement.executeUpdate();
+             PreparedStatement stmt = connection.prepareStatement(query)) {
+                stmt.setInt(1, this.id);
+                stmt.setString(2, customerName);
+                stmt.setString(3, startDate.toString());
+                stmt.setString(4, endDate.toString());
+                stmt.setInt(5, numberOfPeople);
+                stmt.setInt(6, userId);
+                stmt.executeUpdate();
             return true;
         } catch (SQLException e) {
             e.printStackTrace();

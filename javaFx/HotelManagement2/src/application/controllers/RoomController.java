@@ -3,9 +3,14 @@ package application.controllers;
 import application.DBConnection;
 import application.Main;
 import application.models.Room;
+import application.models.Reservation;
+
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.event.ActionEvent;
@@ -21,13 +26,22 @@ public class RoomController {
     public ObservableList<Room> selectedRooms = FXCollections.observableArrayList();
     private ObservableList<User> userList = FXCollections.observableArrayList();
 
+    // Constants for pagination
+    private static final int ROOM_PAGE_SIZE = 10;
+    private static final int RESERVATION_PAGE_SIZE = 10;
+
+    // Offsets for pagination
+    private int roomOffset = 0;
+    private int reservationOffset = 0;
+
     @FXML public TableView<Room> roomTable;
     @FXML private TableColumn<Room, String> roomNameCol;
-    @FXML public TableView<Room> reservationsTable;
-    @FXML private TableColumn<Room, String> reservedNameCol;
-    @FXML private TableColumn<Room, String> reservedByCol;
-    @FXML private TableColumn<Room, String> fromCol;
-    @FXML private TableColumn<Room, String> toCol;
+    @FXML private TableColumn<Room, Double> roomPriceCol; // Add this line to bind the price column
+    @FXML public TableView<Reservation> reservationsTable;
+    @FXML private TableColumn<Reservation, String> reservedNameCol;
+    @FXML private TableColumn<Reservation, String> reservedByCol;
+    @FXML private TableColumn<Reservation, String> fromCol;
+    @FXML private TableColumn<Reservation, String> toCol;
 
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
@@ -42,25 +56,20 @@ public class RoomController {
         Main.roomController = this;
 
         roomNameCol.setCellValueFactory(new PropertyValueFactory<>("roomName"));
-        loadRooms("");
+        roomPriceCol.setCellValueFactory(new PropertyValueFactory<>("pricePerNight")); // Bind price column
+        loadRooms(false, ""); // Load initial rooms
 
-        reservedNameCol.setCellValueFactory(data -> new javafx.beans.property.SimpleStringProperty(data.getValue().getRoomName()));
-        reservedByCol.setCellValueFactory(data -> {
-            Room room = data.getValue();
-            return new javafx.beans.property.SimpleStringProperty(getLastReservationCustomer(room.getId()));
-        });
-        fromCol.setCellValueFactory(data -> {
-            Room room = data.getValue();
-            return new javafx.beans.property.SimpleStringProperty(getLastReservationStartDate(room.getId()));
-        });
-        toCol.setCellValueFactory(data -> {
-            Room room = data.getValue();
-            return new javafx.beans.property.SimpleStringProperty(getLastReservationEndDate(room.getId()));
-        });
-        reservationsTable.setItems(selectedRooms);
+        reservedNameCol.setCellValueFactory(new PropertyValueFactory<>("roomName"));
+        reservedByCol.setCellValueFactory(new PropertyValueFactory<>("customerName"));
+        fromCol.setCellValueFactory(new PropertyValueFactory<>("startDate"));
+        toCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
+        reservationsTable.setItems(FXCollections.observableArrayList());
 
         loadUsers();
         setupUserComboBox();
+
+        // Load reservations from the database
+        loadReservations(false); // Load initial reservations
 
         addToReservationBtn.setOnAction(event -> {
             Room selectedRoom = roomTable.getSelectionModel().getSelectedItem();
@@ -74,17 +83,133 @@ public class RoomController {
                 return;
             }
 
+            if (start.isBefore(LocalDate.now()) || end.isBefore(LocalDate.now())) {
+                statusLabel.setText("Reservation dates cannot be in the past.");
+                return;
+            }
+
+            if (end.isBefore(start)) {
+                statusLabel.setText("End date cannot be before start date.");
+                return;
+            }
+
             String customerName = selectedUser.getUsername();
             int userId = selectedUser.getId();
+            double totalPrice = selectedRoom.getPricePerNight() * (end.toEpochDay() - start.toEpochDay() + 1);
             boolean booked = selectedRoom.addReservation(start, end, customerName, numberOfPeople, userId);
             if (booked) {
-                selectedRooms.add(selectedRoom);
+                Reservation newReservation = new Reservation(
+                    selectedRoom.getRoomName(),
+                    customerName,
+                    start,
+                    end,
+                    false, // Default to unpaid
+                    totalPrice
+                );
+                reservationsTable.getItems().add(0, newReservation); // Add to the top of the table
+                highlightNewReservation(newReservation); // Highlight the new reservation
                 reservationsTable.refresh();
                 statusLabel.setText("Room reserved successfully.");
             } else {
                 statusLabel.setText("Reservation failed: Time slot unavailable.");
             }
         });
+
+        setupRoomTableScrollListener();
+        setupReservationsTableScrollListener();
+    }
+
+private void setupRoomTableScrollListener() {
+    Platform.runLater(() -> {
+        ScrollBar scrollBar = getVerticalScrollbar(roomTable);
+        if (scrollBar != null) {
+            scrollBar.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal.doubleValue() >= 0.7 && // Trigger at 30% from the bottom
+                    roomTable.getItems().size() % ROOM_PAGE_SIZE == 0) {
+                    showLoadingIndicator(true);
+                    String searchQuery = searchField.getText().trim(); // Get current search query
+                    loadRooms(true, searchQuery); // Pass search query to loadRooms
+                    showLoadingIndicator(false);
+                }
+            });
+        }
+    });
+}
+
+private void setupReservationsTableScrollListener() {
+    Platform.runLater(() -> {
+        ScrollBar scrollBar = getVerticalScrollbar(reservationsTable);
+        if (scrollBar != null) {
+            scrollBar.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (newVal.doubleValue() >= 0.7 && // Trigger at 30% from the bottom
+                    reservationsTable.getItems().size() % RESERVATION_PAGE_SIZE == 0) {
+                    showLoadingIndicator(true);
+                    loadReservations(true);
+                    showLoadingIndicator(false);
+                }
+            });
+        }
+    });
+}
+
+private ScrollBar getVerticalScrollbar(TableView<?> table) {
+    for (Node node : table.lookupAll(".scroll-bar")) {
+        if (node instanceof ScrollBar) {
+            ScrollBar bar = (ScrollBar) node;
+            if (bar.getOrientation() == Orientation.VERTICAL) {
+                return bar;
+            }
+        }
+    }
+    return null;
+}
+
+private void showLoadingIndicator(boolean show) {
+    Platform.runLater(() -> {
+        if (show) {
+            statusLabel.setText("Loading...");
+        } else {
+            statusLabel.setText("");
+        }
+    });
+}
+
+    private void loadReservations(boolean loadMore) {
+        if (!loadMore) {
+            reservationsTable.getItems().clear();
+            reservationOffset = 0; // Reset offset if not loading more
+        }
+
+        String query = """
+            SELECT r.name AS room_name, b.customer_name, b.start_date, b.end_date, b.is_paid, b.total_price
+            FROM bookings b
+            JOIN rooms r ON b.room_id = r.id
+            ORDER BY b.start_date ASC
+            LIMIT ? OFFSET ?
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, RESERVATION_PAGE_SIZE);
+            stmt.setInt(2, reservationOffset);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Reservation reservation = new Reservation(
+                    rs.getString("room_name"),
+                    rs.getString("customer_name"),
+                    LocalDate.parse(rs.getString("start_date")),
+                    LocalDate.parse(rs.getString("end_date")),
+                    rs.getBoolean("is_paid"),
+                    rs.getDouble("total_price")
+                );
+                reservationsTable.getItems().add(reservation);
+            }
+            reservationOffset += RESERVATION_PAGE_SIZE; // Increment offset for the next page
+        } catch (SQLException e) {
+            e.printStackTrace();
+            statusLabel.setText("Failed to load reservations.");
+        }
     }
 
     private void loadUsers() {
@@ -161,7 +286,7 @@ public class RoomController {
     @FXML
     public void handleSearch(ActionEvent event) {
         String searchQuery = searchField.getText().trim();
-        loadRooms(searchQuery);
+        loadRooms(false, searchQuery); // Pass search query to loadRooms
         System.out.println("Search completed for query: " + searchQuery);
     }
 
@@ -180,30 +305,38 @@ public class RoomController {
             stmt.executeUpdate();
             statusLabel.setText("Room added successfully.");
             newRoomField.clear();
-            loadRooms("");
+            loadRooms(false, ""); // Reload rooms without search query
         } catch (SQLException e) {
             e.printStackTrace();
             statusLabel.setText("Failed to add room.");
         }
     }
 
-    public void loadRooms(String searchQuery) {
-        roomList.clear();
-        String query = searchQuery.isEmpty() 
-            ? "SELECT id, name, max_people FROM rooms ORDER BY id DESC LIMIT 30"
-            : "SELECT id, name, max_people FROM rooms WHERE name LIKE ? ORDER BY id DESC LIMIT 30";
+    private void loadRooms(boolean loadMore, String searchQuery) {
+        if (!loadMore) {
+            roomTable.getItems().clear();
+            roomOffset = 0; // Reset offset
+        }
 
+        String query = """
+            SELECT * FROM rooms
+            WHERE name LIKE ?
+            LIMIT ? OFFSET ?
+        """;
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
-            if (!searchQuery.isEmpty()) {
-                stmt.setString(1, "%" + searchQuery + "%");
-            }
+            stmt.setString(1, "%" + searchQuery + "%");
+            stmt.setInt(2, ROOM_PAGE_SIZE);
+            stmt.setInt(3, roomOffset);
             ResultSet rs = stmt.executeQuery();
+
             while (rs.next()) {
-                roomList.add(new Room(rs.getInt("id"), rs.getString("name"), rs.getInt("max_people")));
+                Room room = new Room(rs.getInt("id"), rs.getString("name"), rs.getInt("max_people"));
+                room.setPricePerNight(rs.getDouble("price_per_night")); // Set the price per night
+                roomTable.getItems().add(room);
             }
-            roomTable.setItems(roomList);
-        } catch (Exception e) {
+            roomOffset += ROOM_PAGE_SIZE; // Increment offset
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
@@ -251,6 +384,30 @@ public class RoomController {
             e.printStackTrace();
         }
         return "-";
+    }
+
+    private void highlightNewReservation(Reservation reservation) {
+        Platform.runLater(() -> {
+            reservationsTable.getSelectionModel().select(reservation);
+            reservationsTable.scrollTo(reservation);
+
+            // Apply a temporary style to the row
+            reservationsTable.lookupAll(".table-row-cell").forEach(node -> {
+                if (node instanceof TableRow<?> row && row.getItem() == reservation) {
+                    row.setStyle("-fx-background-color: yellow; -fx-text-fill: black;");
+                    new Thread(() -> {
+                        try {
+                            Thread.sleep(1000); // Highlight for 1 second
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        Platform.runLater(() -> row.setStyle("")); // Reset style
+                    }).start();
+                }
+            });
+
+            reservationsTable.getSelectionModel().clearSelection();
+        });
     }
 
     // Inner class to represent a user in the ComboBox

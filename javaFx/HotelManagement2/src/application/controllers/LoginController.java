@@ -3,6 +3,7 @@ package application.controllers;
 import application.DBConnection;
 import application.Main;
 import application.utils.PasswordUtil;
+
 import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;

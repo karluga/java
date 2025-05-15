@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS bookings (
     start_date DATE,
     end_date DATE,
     number_of_people INT,
+    is_paid TINYINT(1) DEFAULT 0,
+    total_price DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (room_id) REFERENCES rooms(id),
     FOREIGN KEY (user_id) REFERENCES users(id)
 );

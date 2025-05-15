@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import application.Main;
 import application.models.Booking;
 import application.models.Room;
+
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
@@ -107,7 +108,7 @@ public class BookingController {
     private void addRoomCard(Room room) {
         VBox card = new VBox(5);
         card.setStyle("-fx-border-color: black; -fx-padding: 10; -fx-background-color: #f0f0f0;");
-        card.setPrefSize(150, 200); // Increased height to accommodate date pickers
+        card.setPrefSize(150, 200);
 
         Text nameText = new Text("Room: " + room.getRoomName());
         Text priceText = new Text("Price: $" + String.format("%.2f", room.getPricePerNight()) + "/night");

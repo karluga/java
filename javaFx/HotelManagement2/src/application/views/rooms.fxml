@@ -9,16 +9,7 @@
         <TableView fx:id="roomTable" prefHeight="200">
             <columns>
                 <TableColumn fx:id="roomNameCol" text="Room Name" prefWidth="150"/>
-            </columns>
-        </TableView>
-    
-        <Label text="Reservations"/>
-        <TableView fx:id="reservationsTable" prefHeight="200">
-            <columns>
-                <TableColumn fx:id="reservedNameCol" text="Room Name" prefWidth="150"/>
-                <TableColumn fx:id="reservedByCol" text="Reserved By" prefWidth="100"/>
-                <TableColumn fx:id="fromCol" text="From" prefWidth="100"/>
-                <TableColumn fx:id="toCol" text="To" prefWidth="100"/>
+                <TableColumn fx:id="roomPriceCol" text="Price" prefWidth="100"/> <!-- New column for price -->
             </columns>
         </TableView>
     
@@ -34,4 +25,15 @@
             <Button fx:id="addToReservationBtn" text="Add to Reservation"/>
             <Label fx:id="statusLabel"/>
         </HBox>
+        
+        <Label text="Reservations"/>
+        <TableView fx:id="reservationsTable" prefHeight="200">
+            <columns>
+                <TableColumn fx:id="reservedNameCol" text="Room Name" prefWidth="150"/>
+                <TableColumn fx:id="reservedByCol" text="Reserved By" prefWidth="100"/>
+                <TableColumn fx:id="fromCol" text="From" prefWidth="100"/>
+                <TableColumn fx:id="toCol" text="To" prefWidth="100"/>
+                <TableColumn fx:id="paidCol" text="Paid" prefWidth="100"/> <!-- New column for paid status -->
+            </columns>
+        </TableView>
     </VBox>
