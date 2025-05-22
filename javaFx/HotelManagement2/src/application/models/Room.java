@@ -20,6 +20,11 @@ public class Room {
         this.maxPeople = maxPeople;
     }
 
+    // New constructor to accept only roomName
+    public Room(String name) {
+        this.name = name;
+    }
+
     public int getId() {
         return id;
     }

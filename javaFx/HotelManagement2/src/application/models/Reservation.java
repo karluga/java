@@ -1,15 +1,10 @@
 package application.models;
 
-import application.DBConnection;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class Reservation {
+    private int id; // Add reservation ID
     private String roomName;
     private String customerName;
     private LocalDate startDate;
@@ -18,8 +13,9 @@ public class Reservation {
     private double totalPrice;
     private double paidAmount; // Store pre-fetched paid amount
 
-    // Updated constructor to include isPaid as Boolean
-    public Reservation(String roomName, String customerName, LocalDate startDate, LocalDate endDate, Boolean isPaid, double totalPrice, double paidAmount) {
+    // Updated constructor to include id
+    public Reservation(int id, String roomName, String customerName, LocalDate startDate, LocalDate endDate, Boolean isPaid, double totalPrice, double paidAmount) {
+        this.id = id;
         this.roomName = roomName;
         this.customerName = customerName;
         this.startDate = startDate;
@@ -27,6 +23,10 @@ public class Reservation {
         this.isPaid = isPaid;
         this.totalPrice = totalPrice;
         this.paidAmount = paidAmount;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public String getRoomName() { return roomName; }

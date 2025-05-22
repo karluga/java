@@ -26,6 +26,42 @@ public class LoginController {
     @FXML private PasswordField registerPasswordField;
     @FXML private Label registerStatusLabel;
 
+    private void handleLoginSuccess(int userId, String username, int role) {
+        Main.setCurrentUser(userId, username, role);
+        Main.currentUserId = userId; // Set the current user ID in Main
+        System.out.println("Logged in as user ID: " + Main.currentUserId); // Log the user ID to the console
+
+        try {
+            if (role == 1) { // Assuming role 1 is admin
+                // Dynamically load rooms.fxml for admin
+                FXMLLoader roomLoader = new FXMLLoader(getClass().getResource("/application/views/rooms.fxml"));
+                Parent roomRoot = roomLoader.load();
+                Main.roomController = roomLoader.getController();
+                Main.mainStage = new Stage();
+                Main.mainStage.setScene(new Scene(roomRoot));
+                Main.mainStage.setTitle("Room Management");
+
+                Main.loginStage.hide();
+                Main.mainStage.show();
+                Main.roomController.onBookingsViewShown(); // Load rooms for admin
+            } else {
+                // Dynamically load booking.fxml for regular user
+                FXMLLoader bookingLoader = new FXMLLoader(getClass().getResource("/application/views/booking.fxml"));
+                Parent bookingRoot = bookingLoader.load();
+                Main.bookingController = bookingLoader.getController();
+                Main.myReservationsStage = new Stage();
+                Main.myReservationsStage.setScene(new Scene(bookingRoot));
+                Main.myReservationsStage.setTitle("My Reservations");
+
+                Main.bookingController.loadInitialRooms(Main.currentUserId); // Load rooms for the user
+                Main.loginStage.hide();
+                Main.myReservationsStage.show();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void handleLogin(ActionEvent event) {
         String user = usernameField.getText();
         String pass = passwordField.getText();
@@ -38,22 +74,8 @@ public class LoginController {
 
             if (rs.next() && PasswordUtil.verifyPassword(pass, rs.getString("password"))) {
                 int role = rs.getInt("role");
-                Main.currentUserId = rs.getInt("id");
-                Main.currentUsername = user;
-                Main.currentUserRole = role;
-
-                Main.loginStage.close();
-
-                if (role == 1) { // Admin
-                    Main.mainStage.show(); // Use preloaded stage for admin
-                } else if (role == 0) { // Regular user
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/application/views/booking.fxml"));
-                    Parent root = loader.load();
-                    Stage stage = new Stage();
-                    stage.setScene(new Scene(root));
-                    stage.setTitle("Booking Management");
-                    stage.show();
-                }
+                int userId = rs.getInt("id");
+                handleLoginSuccess(userId, user, role);
             } else {
                 statusLabel.setText("Invalid credentials.");
             }

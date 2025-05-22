@@ -1,0 +1,13 @@
+<h2>Greetings. Our first Spring Boot Project</h2>
+<h3 th:text="${data}">Python</h3><br>
+<h3 th:text="${data2}">Python</h3><br>
+<a th:href="@{/index}">Index</a><br>
+<div th:insert="header::headersection">
+</div>
+
+<form action="/submit" method="post">
+	<input type="password" name="username">
+	<input type="password" name="password">
+	<button>Submit</button>
+</form>
+<span th:text="${error}"></span>

@@ -16,6 +16,7 @@
         <columns>
             <TableColumn fx:id="roomNameCol" text="Room Name" prefWidth="150"/>
             <TableColumn fx:id="roomPriceCol" text="Price Per Night" prefWidth="100"/>
+            <TableColumn fx:id="roomMaxPeopleCol" text="Max People" prefWidth="100"/> <!-- New column -->
         </columns>
     </TableView>
 
@@ -30,7 +31,9 @@
         <ComboBox fx:id="userComboBox" promptText="Select User" prefWidth="150" editable="true"/>
         <DatePicker fx:id="startDatePicker" promptText="Start Date"/>
         <DatePicker fx:id="endDatePicker" promptText="End Date"/>
-        <Button fx:id="addToReservationBtn" text="Add to Reservation"/>
+        <Label text="Number of People:"/>
+        <Slider fx:id="numberOfPeopleSlider" min="1" max="10" value="1" majorTickUnit="1" minorTickCount="0" snapToTicks="true" showTickLabels="true" showTickMarks="true"/> <!-- New slider -->
+        <Button fx:id="reserveButton" text="Add to Reservation"/>
         <Label fx:id="statusLabel"/>
     </HBox>
     
@@ -52,6 +55,7 @@
                     <TableColumn fx:id="fromCol" text="From" prefWidth="100"/>
                     <TableColumn fx:id="toCol" text="To" prefWidth="100"/>
                     <TableColumn fx:id="paidCol" text="Paid" prefWidth="500"/>
+                    <TableColumn text="Cancel" prefWidth="100"/>
                 </columns>
             </TableView>
         </VBox>

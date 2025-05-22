@@ -21,6 +21,12 @@ public class Main extends Application {
     public static String currentUsername = null;
     public static Integer currentUserRole = null; // 1 for admin, 0 for regular user
 
+    public static void setCurrentUser(int userId, String username, int role) {
+        currentUserId = userId;
+        currentUsername = username;
+        currentUserRole = role;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
         loginStage = primaryStage;
@@ -29,20 +35,7 @@ public class Main extends Application {
         primaryStage.setTitle("Hotel Management System - Login");
         primaryStage.show();
 
-        // Preload RoomController to ensure it’s available
-        FXMLLoader roomLoader = new FXMLLoader(getClass().getResource("/application/views/rooms.fxml"));
-        Parent roomRoot = roomLoader.load();
-        roomController = roomLoader.getController(); // Set the controller reference
-        mainStage = new Stage();
-        mainStage.setScene(new Scene(roomRoot));
-        mainStage.setTitle("Room Management");
-
-        // Preload MyReservations view
-        FXMLLoader myReservationsLoader = new FXMLLoader(getClass().getResource("/application/views/booking.fxml"));
-        Parent myReservationsRoot = myReservationsLoader.load();
-        myReservationsStage = new Stage();
-        myReservationsStage.setScene(new Scene(myReservationsRoot));
-        myReservationsStage.setTitle("My Reservations");
+        // Removed preloading of rooms.fxml and booking.fxml
     }
 
     public static void main(String[] args) throws IOException, SQLException {

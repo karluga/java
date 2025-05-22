@@ -15,15 +15,20 @@ src/application/
 │   ├── rooms.fxml
 │   └── booking.fxml
 ├── models/
-│   ├── Booking.java
+│   ├── Reservation.java
 │   └── Room.java
 
 Dev notes:
-#save zip 5 ... 25/04/2025 10:19 
+25/04/2025
 - in admin panel the reservations are not loaded initially but are added to the table itself 
 - when searching the editable combo box after selecting a user before, there is a conversion error between the User obj and a string
 
 
-IDEAS: 
-- Add price and max people for rooms (admin)
+HAVENT YET CHECKED: 
 - Cancel reservation
+
+WORKED ON LAST:
+should add last insert id to RoomService.reserveRoom()
+
+IN CASE OF EMERGENCY
+`git reset --hard HEAD^`

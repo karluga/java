@@ -9,4 +9,6 @@ module HotelManagement {
     opens application to javafx.graphics, javafx.fxml, javafx.base;
     opens application.controllers to javafx.fxml;
     opens application.models to javafx.base;
+    opens application.ui to javafx.fxml;
+    opens application.services to javafx.base;
 }
