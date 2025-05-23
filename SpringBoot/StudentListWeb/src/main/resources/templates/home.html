@@ -1,0 +1,28 @@
+<div>
+	<table border="1">
+		<tr>
+			<td>Name</td>
+			<td>Age</td>
+			<td>Program</td>
+			<td>Delete</td>
+			<td>Update</td>
+		</tr>
+		<tr th:each="st: ${listofstudents}">
+			<td th:text="${st.name}"></td>
+			<td th:text="${st.age}"></td>
+			<td th:text="${st.program}"></td>
+			<td><a th:href="@{/deleteStudent/{id}(id=${st.id})}"><img src="/images/delete.png" width="20"></a></td>
+			<td><a th:href="@{/updateStudent/{id}(id=${st.id})}"><img src="/images/update.png" width="20"></a></td>
+		</tr>		
+	</table>
+</div>
+<br>
+<div>
+	<form action="/saveStudent" method="post" autocomplete="off">
+		<input type="hidden" name="id"         th:value="${selectedstudent.id}"><br>
+		<input type="text" name="name"         th:value="${selectedstudent.name}"><br>
+		<input type="text" name="age"          th:value="${selectedstudent.age}"><br>
+		<input type="text" name="program"      th:value="${selectedstudent.program}"><br>
+		<button type="submit">Submit</button>
+	</form>
+</div>
