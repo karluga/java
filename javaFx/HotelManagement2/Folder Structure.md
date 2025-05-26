@@ -41,6 +41,7 @@ src/application/
 
 ## Haven't checked
 - Error handling (probably garbage)
+- App will probably crash if theres nothing in the database
 
 ### IN CASE OF EMERGENCY
 `git reset --hard HEAD^`
