@@ -19,10 +19,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.cell.*;
+import javafx.scene.layout.HBox;
 import javafx.geometry.Orientation;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -41,7 +40,7 @@ public class RoomController {
     @FXML private TableView<Room> roomTable;
     @FXML private TableColumn<Room, String> roomNameCol;
     @FXML private TableColumn<Room, Double> roomPriceCol;
-    @FXML private TableColumn<Room, Integer> roomMaxPeopleCol; // New column for max people
+    @FXML private TableColumn<Room, Integer> roomMaxPeopleCol;
     @FXML private TableView<Reservation> reservationsTable;
     @FXML private TableColumn<Reservation, String> reservedNameCol;
     @FXML private TableColumn<Reservation, String> reservedByCol;
@@ -54,8 +53,11 @@ public class RoomController {
     @FXML private DatePicker startDatePicker;
     @FXML private DatePicker endDatePicker;
     @FXML private Spinner<Integer> numberOfPeopleSpinner;
-    @FXML private Slider numberOfPeopleSlider; // New slider for selecting the number of people
+    @FXML private Slider numberOfPeopleSlider;
     @FXML private Button reserveButton;
+    @FXML private TextField newRoomMaxPeopleField;
+    @FXML private TextField newRoomNameField;
+    @FXML private TextField newRoomPriceField;
 
     private static final int PAGE_SIZE = 10;
     private int roomOffset = 0;
@@ -67,6 +69,7 @@ public class RoomController {
 
         setupRoomTable();
         setupReservationTable();
+        setupPaidColumn();
         setupUserComboBox();
 
         // Bind handleReservation to reserveButton
@@ -102,42 +105,81 @@ public class RoomController {
         toCol.setCellValueFactory(new PropertyValueFactory<>("endDate"));
         paidCol.setCellValueFactory(new PropertyValueFactory<>("paid"));
 
-        // Add a custom cell factory for the "Cancel" button
-        TableColumn<Reservation, Void> cancelCol = new TableColumn<>("Cancel");
-        cancelCol.setCellFactory(new Callback<>() {
+        reservationsTable.setItems(reservationList);
+    }
+
+    // Updated method to set up the paid column logic
+    private void setupPaidColumn() {
+        paidCol.setCellFactory(column -> new TableCell<>() {
             @Override
-            public TableCell<Reservation, Void> call(final TableColumn<Reservation, Void> param) {
-                return new TableCell<>() {
-                    private final Button cancelButton = new Button("Cancel");
+            protected void updateItem(Boolean isPaid, boolean empty) {
+                super.updateItem(isPaid, empty);
+                if (empty || getTableRow().getItem() == null) {
+                    setText(null);
+                    setGraphic(null);
+                    setStyle("");
+                } else {
+                    Reservation reservation = (Reservation) getTableRow().getItem();
+                    double progress = reservation.getPaidAmount() / reservation.getTotalPrice();
+                    LocalDate today = LocalDate.now();
+                    LocalDate overdueDate = reservation.getEndDate().plusDays(1);
 
-                    {
-                        cancelButton.setOnAction(event -> {
-                            Reservation reservation = getTableView().getItems().get(getIndex());
-                            handleCancellation(reservation);
-                        });
-                    }
+                    ProgressBar progressBar = new ProgressBar(progress);
+                    progressBar.setPrefWidth(80);
 
-                    @Override
-                    protected void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
+                    Label amountLabel = new Label("Paid: $" + reservation.getPaidAmount() + " / $" + reservation.getTotalPrice());
+
+                    Button partialPayButton = new Button("Partial Pay");
+                    partialPayButton.setOnAction(event -> paymentService.handlePartialPayment(reservation, reservationsTable, statusLabel));
+
+                    Button markPaidButton = new Button("Mark as Paid");
+                    markPaidButton.setOnAction(event -> paymentService.markAsPaid(reservation, true));
+
+                    HBox cellContent;
+
+                    if (isPaid == null || isPaid == false) {
+                        // Unpaid or partially paid
+                        if (reservation.getPaidAmount() > 0) {
+                            // Show progress bar for partially paid
+                            cellContent = new HBox(10, progressBar, amountLabel, partialPayButton, markPaidButton);
                         } else {
-                            Reservation reservation = getTableView().getItems().get(getIndex());
-                            LocalDate today = LocalDate.now();
-                            if (today.isBefore(reservation.getStartDate())) {
-                                setGraphic(cancelButton);
-                            } else {
-                                setGraphic(null); // Hide the button if the condition is not met
-                            }
+                            // No progress bar for unpaid
+                            cellContent = new HBox(10, amountLabel, partialPayButton, markPaidButton);
                         }
+
+                        if (today.isAfter(overdueDate)) {
+                            // Red background for very late payments
+                            setStyle("-fx-background-color: red; -fx-text-fill: white;");
+                        } else {
+                            setStyle("-fx-background-color: orange; -fx-text-fill: black;");
+                        }
+
+                        // Cancel button for unpaid reservations with a future start date
+                        if (reservation.getStartDate().isAfter(today)) {
+                            Hyperlink cancelLink = new Hyperlink("Cancel");
+                            cancelLink.setOnAction(event -> {
+                                boolean success = roomService.cancelReservation(reservation.getId());
+                                if (success) {
+                                    reservationList.remove(reservation);
+                                    statusLabel.setText("Reservation canceled successfully.");
+                                } else {
+                                    statusLabel.setText("Failed to cancel reservation.");
+                                }
+                            });
+                            cellContent.getChildren().add(cancelLink);
+                        }
+                    } else {
+                        // Fully paid
+                        Label fullyPaidLabel = new Label("Paid: $" + reservation.getTotalPrice());
+                        cellContent = new HBox(10, fullyPaidLabel);
+                        setStyle("-fx-background-color: green; -fx-text-fill: white;");
                     }
-                };
+
+                    setGraphic(cellContent);
+                    setText(null);
+                }
             }
         });
-
-        reservationsTable.getColumns().add(cancelCol);
-        reservationsTable.setItems(reservationList);
     }
 
     @FXML
@@ -391,6 +433,7 @@ public class RoomController {
 
             Reservation newReservation = new Reservation(
                 reservationId,
+                selectedRoom.getId(), // Use roomId
                 selectedRoom.getRoomName(),
                 selectedUser.getUsername(),
                 startDate,
@@ -425,9 +468,18 @@ public class RoomController {
     @FXML
     public void handleAddRoom() {
         try {
-            Room newRoom = new Room("New Room");
-            newRoom.setPricePerNight(100.0);
-            newRoom.setMaxPeople(2);
+            String roomName = newRoomNameField.getText().trim();
+            double pricePerNight = Double.parseDouble(newRoomPriceField.getText().trim());
+            int maxPeople = Integer.parseInt(newRoomMaxPeopleField.getText().trim());
+
+            if (roomName.isEmpty() || pricePerNight <= 0 || maxPeople <= 0) {
+                statusLabel.setText("Please provide valid room details.");
+                return;
+            }
+
+            Room newRoom = new Room(roomName);
+            newRoom.setPricePerNight(pricePerNight);
+            newRoom.setMaxPeople(maxPeople); // Set max people
 
             boolean success = roomService.addRoom(newRoom);
             if (success) {
@@ -436,6 +488,8 @@ public class RoomController {
             } else {
                 statusLabel.setText("Failed to add room.");
             }
+        } catch (NumberFormatException e) {
+            statusLabel.setText("Invalid input. Please enter valid numbers for price and max people.");
         } catch (Exception e) {
             e.printStackTrace();
             statusLabel.setText("An error occurred while adding the room.");

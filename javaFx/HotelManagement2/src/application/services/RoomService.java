@@ -2,6 +2,7 @@ package application.services;
 
 import application.DBConnection;
 import application.models.Room;
+import application.models.Reservation;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -174,6 +175,7 @@ public class RoomService {
         }
     }
 
+    // TODO: Should refactor this
     public boolean cancelReservation(int userId, Room room) {
         String query = "DELETE FROM bookings WHERE room_id = ? AND user_id = ?";
         try (Connection connection = DBConnection.getConnection();
@@ -238,5 +240,43 @@ public class RoomService {
             e.printStackTrace();
         }
         return -1; // Return -1 if no ID is found
+    }
+
+    public List<Reservation> getAllCancellableReservations(int userId) {
+        List<Reservation> cancellableReservations = new ArrayList<>();
+        String query = """
+            SELECT b.id, b.room_id, r.name AS room_name, b.customer_name, b.start_date, b.end_date, b.is_paid, b.total_price,
+                   COALESCE(SUM(p.amount_paid), 0) AS total_paid
+            FROM bookings b
+            JOIN rooms r ON b.room_id = r.id
+            LEFT JOIN payments p ON b.id = p.reservation_id
+            WHERE b.user_id = ? AND b.start_date > CURRENT_DATE
+            GROUP BY b.id
+            ORDER BY b.start_date ASC
+        """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                cancellableReservations.add(new Reservation(
+                    rs.getInt("id"), // Reservation ID
+                    rs.getInt("room_id"), // Room ID
+                    rs.getString("room_name"),
+                    rs.getString("customer_name"),
+                    LocalDate.parse(rs.getString("start_date")),
+                    LocalDate.parse(rs.getString("end_date")),
+                    rs.getBoolean("is_paid"),
+                    rs.getDouble("total_price"),
+                    rs.getDouble("total_paid")
+                ));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return cancellableReservations;
     }
 }

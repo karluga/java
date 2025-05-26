@@ -13,22 +13,34 @@ src/application/
 ├── views/
 │   ├── login.fxml
 │   ├── rooms.fxml
-│   └── booking.fxml
+│   ├── booking.fxml
 ├── models/
 │   ├── Reservation.java
-│   └── Room.java
+│   ├── Room.java
+│   └── User.java
+│
+├── utils/
+│   └── PasswordUtil.java
+├── ui/
+│   └── RoomCardFactory.java
 
-Dev notes:
-25/04/2025
-- in admin panel the reservations are not loaded initially but are added to the table itself 
-- when searching the editable combo box after selecting a user before, there is a conversion error between the User obj and a string
+# Dev notes:
+26/05/2025
 
+(probably never touching this again)
 
-HAVENT YET CHECKED: 
-- Cancel reservation
+## To-be improvements
+- filtering reservations should be filtered by unpaid in default
+- move statusLabel for successful room adding next to fields
 
-WORKED ON LAST:
-should add last insert id to RoomService.reserveRoom()
+## Known issues (severity top to bottom)
+- floating point numbers with partial payments
+- in RoomController reserved by column isn't showing the username (admin panel) 
+- filtering reservations by name should have been by user's name
+- scrolling rooms doesn't account for screen width (user view)
 
-IN CASE OF EMERGENCY
+## Haven't checked
+- Error handling (probably garbage)
+
+### IN CASE OF EMERGENCY
 `git reset --hard HEAD^`

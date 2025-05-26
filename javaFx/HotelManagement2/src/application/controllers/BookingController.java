@@ -2,6 +2,7 @@ package application.controllers;
 
 import application.Main;
 import application.models.Room;
+import application.models.Reservation;
 import application.services.RoomService;
 import application.ui.RoomCardFactory;
 
@@ -61,9 +62,29 @@ public class BookingController {
     public void loadInitialRooms(int userId) {
         roomFlowPane.getChildren().clear();
         currentPage = 0;
-        List<Room> rooms = roomService.fetchRooms(userId, "", PAGE_SIZE, currentPage * PAGE_SIZE);
-        roomService.setAllRooms(rooms); // Store all rooms in the service
-        rooms.forEach(room -> roomCardFactory.createRoomCard(room, roomFlowPane));
+
+        // Fetch cancellable reservations to get room IDs
+        List<Reservation> cancellableReservations = roomService.getAllCancellableReservations(userId);
+
+        // Map room IDs from cancellable reservations
+        List<Integer> reservedRoomIds = cancellableReservations.stream()
+            .map(Reservation::getRoomId) // Use room_id instead of booking_id
+            .toList();
+
+        // Fetch all rooms
+        List<Room> allRooms = roomService.fetchRooms(userId, "", PAGE_SIZE, currentPage * PAGE_SIZE);
+        roomService.setAllRooms(allRooms); // Store all rooms in the service
+
+        // Create cards for all rooms, marking reserved ones
+        allRooms.forEach(room -> {
+            boolean isReserved = reservedRoomIds.contains(room.getId());
+            System.out.println("Debug: Creating room card for room ID: " + room.getId() + ", Reserved: " + isReserved);
+            Reservation reservation = cancellableReservations.stream()
+                .filter(res -> res.getRoomId() == room.getId()) // Match room_id
+                .findFirst()
+                .orElse(null);
+            roomCardFactory.createRoomCard(room, roomFlowPane, isReserved, reservation);
+        });
     }
 
     private void loadMoreRooms() {
@@ -74,14 +95,33 @@ public class BookingController {
     }
 
     private void loadRooms(String searchQuery) {
-        List<Room> rooms = roomService.fetchRooms(Main.currentUserId, searchQuery, PAGE_SIZE, currentPage * PAGE_SIZE);
-        rooms.forEach(room -> roomCardFactory.createRoomCard(room, roomFlowPane));
+        List<Room> availableRooms = roomService.fetchRooms(Main.currentUserId, searchQuery, PAGE_SIZE, currentPage * PAGE_SIZE);
+        availableRooms.forEach(room -> roomCardFactory.createRoomCard(room, roomFlowPane, false, null));
     }
 
     private void filterRooms(String searchQuery) {
         roomFlowPane.getChildren().clear();
+
+        // Fetch cancellable reservations to get reservation IDs
+        List<Reservation> cancellableReservations = roomService.getAllCancellableReservations(Main.currentUserId);
+
+        // Filter all rooms
         List<Room> filteredRooms = roomService.filterRooms(searchQuery);
-        filteredRooms.forEach(room -> roomCardFactory.createRoomCard(room, roomFlowPane));
+
+        // Map reservation IDs to their corresponding rooms
+        List<Integer> reservedRoomIds = cancellableReservations.stream()
+            .map(Reservation::getRoomId) // Use room_id
+            .toList();
+
+        // Create cards for filtered rooms, marking reserved ones
+        filteredRooms.forEach(room -> {
+            boolean isReserved = reservedRoomIds.contains(room.getId());
+            Reservation reservation = cancellableReservations.stream()
+                .filter(res -> res.getRoomId() == room.getId()) // Match room_id
+                .findFirst()
+                .orElse(null);
+            roomCardFactory.createRoomCard(room, roomFlowPane, isReserved, reservation);
+        });
     }
 
     public void updateStatusLabel(String message) {
@@ -94,21 +134,34 @@ public class BookingController {
             return;
         }
 
+        if (endDate.isBefore(startDate)) {
+            updateStatusLabel("End date cannot be before start date.");
+            return;
+        }
+
         if (numberOfPeople > room.getMaxPeople()) {
             updateStatusLabel("Selected room cannot accommodate " + numberOfPeople + " people.");
             return;
         }
 
-        Optional<String> result = roomService.reserveRoom(Main.currentUserId, room, startDate, endDate, numberOfPeople);
+        Optional<Integer> result = roomService.reserveRoom(Main.currentUserId, room, startDate, endDate, numberOfPeople);
+
         if (result.isEmpty()) {
-            updateStatusLabel("Booking successful for " + room.getRoomName() + ".");
+            updateStatusLabel("Booking failed: The selected dates are already booked or an error occurred.");
         } else {
-            updateStatusLabel("Booking failed: " + result.get());
+            int reservationId = result.get();
+            System.out.println("Debug: Successfully retrieved reservation ID: " + reservationId);
+            updateStatusLabel("Booking successful for " + room.getRoomName() + ".");
         }
     }
 
     public void handleCancellation(Room room, int reservationId) {
-        boolean success = roomService.cancelReservation(reservationId); // Use reservation ID
+        if (reservationId <= 0) {
+            updateStatusLabel("Invalid reservation ID.");
+            return;
+        }
+
+        boolean success = roomService.cancelReservation(reservationId);
         if (success) {
             updateStatusLabel("Reservation for " + room.getRoomName() + " has been canceled.");
         } else {

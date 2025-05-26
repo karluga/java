@@ -4,7 +4,8 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 public class Reservation {
-    private int id; // Add reservation ID
+    private int id;
+    private int roomId;
     private String roomName;
     private String customerName;
     private LocalDate startDate;
@@ -13,9 +14,10 @@ public class Reservation {
     private double totalPrice;
     private double paidAmount; // Store pre-fetched paid amount
 
-    // Updated constructor to include id
-    public Reservation(int id, String roomName, String customerName, LocalDate startDate, LocalDate endDate, Boolean isPaid, double totalPrice, double paidAmount) {
+    // Updated constructor to include roomId
+    public Reservation(int id, int roomId, String roomName, String customerName, LocalDate startDate, LocalDate endDate, Boolean isPaid, double totalPrice, double paidAmount) {
         this.id = id;
+        this.roomId = roomId;
         this.roomName = roomName;
         this.customerName = customerName;
         this.startDate = startDate;
@@ -27,6 +29,10 @@ public class Reservation {
 
     public int getId() {
         return id;
+    }
+
+    public int getRoomId() {
+        return roomId;
     }
 
     public String getRoomName() { return roomName; }

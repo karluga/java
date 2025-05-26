@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.shape.Rectangle?>
 
 <VBox xmlns:fx="http://javafx.com/fxml" fx:controller="application.controllers.BookingController" spacing="10" alignment="CENTER" style="-fx-padding: 20;">
     <Label fx:id="welcomeLabel" style="-fx-font-size: 18px; -fx-font-weight: bold;" text="Welcome, {username}"/>
     <Label fx:id="bookingStatsLabel" style="-fx-font-size: 14px;" text="Active Bookings: 0 | Total Bookings: 0"/>
+    <HBox alignment="CENTER_LEFT" spacing="5">
+        <Rectangle width="10" height="10" style="-fx-fill: green;"/>
+        <Label text="Relevant reservations" style="-fx-font-size: 12px;"/>
+    </HBox>
     <TextField fx:id="searchField" promptText="Search Rooms by Name"/>
     <ScrollPane fx:id="scrollPane" fitToWidth="true" prefHeight="400">
         <content>

@@ -1,7 +1,7 @@
 package application.services;
 
 import application.DBConnection;
-import application.models.User; // Import the User class
+import application.models.User;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

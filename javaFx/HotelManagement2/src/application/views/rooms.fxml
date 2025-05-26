@@ -22,8 +22,9 @@
 
     <!-- Add Room -->
     <HBox spacing="10">
-        <TextField fx:id="newRoomField" promptText="New Room Name"/>
+        <TextField fx:id="newRoomNameField" promptText="New Room Name"/>
         <TextField fx:id="newRoomPriceField" promptText="Price Per Night"/>
+        <TextField fx:id="newRoomMaxPeopleField" promptText="Max People"/> <!-- New field -->
         <Button fx:id="addRoomButton" text="Add Room" onAction="#handleAddRoom"/>
     </HBox>
 
@@ -55,7 +56,6 @@
                     <TableColumn fx:id="fromCol" text="From" prefWidth="100"/>
                     <TableColumn fx:id="toCol" text="To" prefWidth="100"/>
                     <TableColumn fx:id="paidCol" text="Paid" prefWidth="500"/>
-                    <TableColumn text="Cancel" prefWidth="100"/>
                 </columns>
             </TableView>
         </VBox>
