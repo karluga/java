@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Room Management</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+        .form-group { margin-bottom: 15px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; }
+        .btn { padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .btn:hover { background-color: #0056b3; }
+        .status { color: red; }
+        .pagination { margin-top: 20px; }
+        .pagination a { margin: 0 5px; text-decoration: none; }
+        .pagination a.active { font-weight: bold; }
+        .paid { background-color: green; color: white; }
+        .unpaid { background-color: orange; color: black; }
+        .overdue { background-color: red; color: white; }
+    </style>
+</head>
+<body>
+    <h2>Room Management</h2>
+    <a th:href="@{/logout}" class="btn">Logout</a>
+    <a th:href="@{/booking}" class="btn">View My Reservations</a>
+    <p th:if="${status}" class="status" th:text="${status}"></p>
+
+    <h3>Available Rooms</h3>
+    <form th:action="@{/rooms}" method="get">
+        <div class="form-group">
+            <input type="text" name="searchQuery" th:value="${searchQuery}" placeholder="Search Rooms"/>
+            <button type="submit" class="btn">Search</button>
+        </div>
+    </form>
+    <table>
+        <thead>
+            <tr>
+                <th>Room Name</th>
+                <th>Price Per Night</th>
+                <th>Max People</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="room : ${rooms}">
+                <td th:text="${room.name}"></td>
+                <td th:text="${#numbers.formatDecimal(room.pricePerNight, 1, 2)}"></td>
+                <td th:text="${room.maxPeople}"></td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+        <a th:href="@{/rooms(page=${currentPage - 1}, searchQuery=${searchQuery})}" th:if="${currentPage > 0}">&laquo; Previous</a>
+        <span th:each="i : ${#numbers.sequence(0, totalRoomPages - 1)}">
+            <a th:href="@{/rooms(page=${i}, searchQuery=${searchQuery})}" th:classappend="${i == currentPage} ? 'active'">[[${i + 1}]]</a>
+        </span>
+        <a th:href="@{/rooms(page=${currentPage + 1}, searchQuery=${searchQuery})}" th:if="${currentPage < totalRoomPages - 1}">Next &raquo;</a>
+    </div>
+
+    <h3>Add Room</h3>
+    <form th:action="@{/rooms/add}" method="post">
+        <div class="form-group">
+            <input type="text" name="name" placeholder="Room Name" required/>
+        </div>
+        <div class="form-group">
+            <input type="number" name="pricePerNight" placeholder="Price Per Night" step="0.01" required/>
+        </div>
+        <div class="form-group">
+            <input type="number" name="maxPeople" placeholder="Max People" required/>
+        </div>
+        <button type="submit" class="btn">Add Room</button>
+    </form>
+
+    <h3>Add Reservation</h3>
+    <form th:action="@{/rooms/reserve}" method="post">
+        <div class="form-group">
+            <select name="roomId" required>
+                <option value="" disabled selected>Select Room</option>
+                <option th:each="room : ${rooms}" th:value="${room.id}" th:text="${room.name}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <select name="userId" required>
+                <option value="" disabled selected>Select User</option>
+                <option th:each="user : ${users}" th:value="${user.id}" th:text="${user.username + ' (ID: ' + user.id + ')'}"></option>
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="date" name="startDate" required/>
+        </div>
+        <div class="form-group">
+            <input type="date" name="endDate" required/>
+        </div>
+        <div class="form-group">
+            <input type="number" name="numberOfPeople" min="1" value="1" required/>
+        </div>
+        <button type="submit" class="btn">Add to Reservation</button>
+    </form>
+
+    <h3>Reservations</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Room Name</th>
+                <th>Reserved By</th>
+                <th>From</th>
+                <th>To</th>
+                <th>Paid</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="reservation : ${reservations}" th:class="${reservation.statusClass}">
+                <td th:text="${reservation.roomName}"></td>
+                <td th:text="${reservation.customerName}"></td>
+                <td th:text="${reservation.startDate}"></td>
+                <td th:text="${reservation.endDate}"></td>
+                <td>
+                    <span th:if="${reservation.isPaid}">Paid: $<span th:text="${reservation.totalPrice}"></span></span>
+                    <span th:unless="${reservation.isPaid}">
+                        Paid: $<span th:text="${reservation.paidAmount}"></span> / $<span th:text="${reservation.totalPrice}"></span>
+                        <progress th:value="${reservation.paidAmount / reservation.totalPrice}" max="1"></progress>
+                    </span>
+                </td>
+                <td>
+                    <form th:action="@{/rooms/markPaid}" method="post" style="display: inline;">
+                        <input type="hidden" name="reservationId" th:value="${reservation.id}"/>
+                        <button type="submit" class="btn" th:unless="${reservation.isPaid}">Mark as Paid</button>
+                    </form>
+                    <form th:action="@{/rooms/partialPayment}" method="post" style="display: inline;">
+                        <input type="hidden" name="reservationId" th:value="${reservation.id}"/>
+                        <input type="number" name="paymentAmount" min="0" step="0.01" th:unless="${reservation.isPaid}"/>
+                        <button type="submit" class="btn" th:unless="${reservation.isPaid}">Partial Pay</button>
+                    </form>
+                    <form th:action="@{/rooms/cancel}" method="post" style="display: inline;" th:if="${reservation.cancelable}">
+                        <input type="hidden" name="reservationId" th:value="${reservation.id}"/>
+                        <button type="submit" class="btn">Cancel</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <div class="pagination">
+        <a th:href="@{/rooms(page=${currentPage - 1}, searchQuery=${searchQuery})}" th:if="${currentPage > 0}">&laquo; Previous</a>
+        <span th:each="i : ${#numbers.sequence(0, totalReservationPages - 1)}">
+            <a th:href="@{/rooms(page=${i}, searchQuery=${searchQuery})}" th:classappend="${i == currentPage} ? 'active'">[[${i + 1}]]</a>
+        </span>
+        <a th:href="@{/rooms(page=${currentPage + 1}, searchQuery=${searchQuery})}" th:if="${currentPage < totalReservationPages - 1}">Next &raquo;</a>
+    </div>
+</body>
+</html>

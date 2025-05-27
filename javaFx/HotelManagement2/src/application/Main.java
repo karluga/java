@@ -34,8 +34,6 @@ public class Main extends Application {
         primaryStage.setScene(new Scene(root));
         primaryStage.setTitle("Hotel Management System - Login");
         primaryStage.show();
-
-        // Removed preloading of rooms.fxml and booking.fxml
     }
 
     public static void main(String[] args) throws IOException, SQLException {
