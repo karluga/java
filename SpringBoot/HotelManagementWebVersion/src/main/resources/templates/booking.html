@@ -27,7 +27,7 @@
     </form>
     <p th:if="${status}" class="status" th:text="${status}"></p>
 
-    <div th:each="room : ${rooms}" class="room-card" th:classappend="${cancellableReservations.?[roomId == ${room.id}].size() > 0} ? 'reserved'">
+    <div th:each="room : ${rooms}" class="room-card" th:classappend="${cancellableReservations.?[roomId == room.id].size() > 0} ? 'reserved'">
         <h3 th:text="${room.name}"></h3>
         <p>Price: $<span th:text="${#numbers.formatDecimal(room.pricePerNight, 1, 2)}"></span>/night</p>
         <p>Max People: <span th:text="${room.maxPeople}"></span></p>
@@ -44,14 +44,13 @@
             </div>
             <button type="submit" class="btn">Reserve</button>
         </form>
-        <div th:if="${cancellableReservations.?[roomId == ${room.id}].size() > 0}">
+        <div th:if="${cancellableReservations.?[roomId == room.id].size() > 0}">
             <form th:action="@{/booking/cancel}" method="post">
-                <input type="hidden" name="reservationId" th:value="${cancellableReservations.?[roomId == ${room.id}][0].id}"/>
+                <input type="hidden" name="reservationId" th:value="${cancellableReservations.?[roomId == room.id][0].id}"/>
                 <button type="submit" class="btn">Cancel</button>
             </form>
         </div>
     </div>
-
     <div class="pagination">
         <a th:href="@{/booking(page=${currentPage - 1}, searchQuery=${searchQuery})}" th:if="${currentPage > 0}">&laquo; Previous</a>
         <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
