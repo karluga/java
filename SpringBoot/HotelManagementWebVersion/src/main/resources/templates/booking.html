@@ -48,6 +48,11 @@
             float: right;
         }
     </style>
+    <script>
+        function confirmCancellation() {
+            return confirm("Are you sure you want to cancel this booking?");
+        }
+    </script>
 </head>
 <body>
     <h2 id="welcome-message" th:text="${welcomeMessage}"></h2><a id="logout-btn" th:href="@{/logout}">Logout</a>
@@ -78,7 +83,7 @@
                 </div>
                 <button type="submit" class="btn">Reserve</button>
             </form>
-            <form th:action="@{/booking/cancel}" method="post" th:if="${reservationsByRoomId.containsKey(room.id)}">
+            <form th:action="@{/booking/cancel}" method="post" th:if="${reservationsByRoomId.containsKey(room.id)}" onsubmit="return confirmCancellation()">
                 <input type="hidden" name="reservationId" th:value="${reservationsByRoomId[room.id]?.id}"/>
                 <button type="submit" class="btn cancel">Cancel</button>
             </form>

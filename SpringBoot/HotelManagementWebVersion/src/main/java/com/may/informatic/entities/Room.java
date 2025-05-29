@@ -20,7 +20,7 @@ public class Room {
     private double pricePerNight;
 
     @Column(name = "reserved")
-    private Boolean reserved; // Wrapper type to allow null values
+    private Boolean reserved;
 
     public Room() {}
 

@@ -13,7 +13,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes; // For st
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
@@ -51,11 +50,9 @@ public class BookingController {
                 .anyMatch(reservation -> reservation.getRoomId() == room.getId());
             room.setReserved(isReserved); // Add a reserved flag to the room object
 
-            // Debug: Print reservation matching logic for each room
             System.out.println("Debug: Room ID: " + room.getId() + ", Name: " + room.getName() + ", Reserved: " + isReserved);
         });
 
-        // Debug: Print all room objects and their reserved status
         System.out.println("Debug: Final room objects and their reserved status:");
         allRooms.forEach(room -> System.out.println("Room ID: " + room.getId() + ", Name: " + room.getName() + ", Reserved: " + room.isReserved()));
 

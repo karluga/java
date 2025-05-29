@@ -23,6 +23,11 @@
         .unpaid { background-color: orange; color: black; }
         .overdue { background-color: red; color: white; }
     </style>
+    <script>
+        function confirmCancellation() {
+            return confirm("Are you sure you want to cancel this reservation?");
+        }
+    </script>
 </head>
 <body>
     <h2>Room Management</h2>
@@ -136,7 +141,7 @@
                         <input type="number" name="paymentAmount" min="0" step="0.01" th:unless="${reservation.isPaid}"/>
                         <button type="submit" class="btn" th:unless="${reservation.isPaid}">Partial Pay</button>
                     </form>
-                    <form th:action="@{/rooms/cancel}" method="post" style="display: inline;" th:if="${reservation.cancelable}">
+                    <form th:action="@{/rooms/cancel}" method="post" style="display: inline;" th:if="${reservation.cancelable}" onsubmit="return confirmCancellation()">
                         <input type="hidden" name="reservationId" th:value="${reservation.id}"/>
                         <button type="submit" class="btn">Cancel</button>
                     </form>

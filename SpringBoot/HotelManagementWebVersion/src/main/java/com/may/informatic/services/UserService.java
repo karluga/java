@@ -23,7 +23,6 @@ public class UserService {
     }
 
     public Optional<User> findById(int userId) {
-        // Ensure this method returns an Optional<User>
         return userRepository.findById(userId);
     }
 
