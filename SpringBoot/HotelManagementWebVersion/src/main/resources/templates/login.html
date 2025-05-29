@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <title>Hotel Management System - Login</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
         .tab { display: none; }
         .tab.active { display: block; }
         .tabs { display: flex; margin-bottom: 20px; }
@@ -11,19 +16,20 @@
         .tab-link.active { background-color: #f0f0f0; }
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; }
-        .form-group input { width: 100%; padding: 8px; }
+        .form-group input { width: 100%; padding: 8px; width: -webkit-fill-available;}
         .btn { padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; }
         .btn:hover { background-color: #0056b3; }
         .status { color: red; }
     </style>
 </head>
 <body>
+    <h1>Welcome to the hotel!</h1>
     <div class="tabs">
-        <div class="tab-link active" onclick="openTab('login')">Login</div>
-        <div class="tab-link" onclick="openTab('register')">Register</div>
+        <div th:class="'tab-link' + (${registerStatus} ? '' : ' active')" onclick="openTab('login')">Login</div>
+        <div th:class="'tab-link' + (${registerStatus} ? ' active' : '')" onclick="openTab('register')">Register</div>
     </div>
 
-    <div id="login" class="tab active">
+    <div id="login" th:class="'tab' + (${registerStatus} ? '' : ' active')">
         <form th:action="@{/login}" method="post">
             <div class="form-group">
                 <label for="username">Username</label>
@@ -38,7 +44,7 @@
         </form>
     </div>
 
-    <div id="register" class="tab">
+    <div id="register" th:class="'tab' + (${registerStatus} ? ' active' : '')">
         <form th:action="@{/register}" method="post">
             <div class="form-group">
                 <label for="registerUsername">Username</label>
@@ -52,7 +58,7 @@
             <p th:if="${registerStatus}" class="status" th:text="${registerStatus}"></p>
         </form>
     </div>
-
+    <img src="images/hotel.jpg" alt="Hotel Image" style="width: 100%; height: auto; margin-top: 20px;">
     <script>
         function openTab(tabName) {
             document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));

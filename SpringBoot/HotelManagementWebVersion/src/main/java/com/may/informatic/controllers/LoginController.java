@@ -44,7 +44,7 @@ public class LoginController {
     public String handleRegister(@RequestParam String username, @RequestParam String password, Model model) {
         boolean success = userService.registerUser(username, password, 0);
         if (success) {
-            model.addAttribute("registerStatus", "Registration successful.");
+            return "redirect:/booking"; // Bug: new user keeps previous session
         } else {
             model.addAttribute("registerStatus", "Username already exists.");
         }

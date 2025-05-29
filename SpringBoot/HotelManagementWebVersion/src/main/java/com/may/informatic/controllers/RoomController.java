@@ -12,6 +12,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.servlet.http.HttpSession;
 import java.time.LocalDate;
@@ -47,6 +48,8 @@ public class RoomController {
         reservations.forEach(reservation -> {
             reservation.getStatusClass(); // Ensure statusClass is calculated
             reservation.isCancelable();  // Ensure isCancelable is calculated
+            reservation.setCustomerName(reservation.getUsername(userService)); // Populate username
+            reservation.setPaidAmount(paymentService.getPaidAmount(reservation.getId())); // Populate paid amount
         });
         List<User> users = userService.fetchUsers();
 
@@ -77,32 +80,19 @@ public class RoomController {
     @PostMapping("/rooms/reserve")
     public String handleReservation(@RequestParam int roomId, @RequestParam int userId, 
                                    @RequestParam String startDate, @RequestParam String endDate, 
-                                   @RequestParam int numberOfPeople, Model model) {
-        Room room = roomService.findById(roomId).orElse(null);
-        if (room == null) {
-            model.addAttribute("status", "Room not found.");
-            return "rooms";
-        }
-
-        LocalDate start = LocalDate.parse(startDate);
-        LocalDate end = LocalDate.parse(endDate);
-
-        Optional<Integer> result = roomService.reserveRoom(userId, room, start, end, numberOfPeople);
-        if (result.isEmpty()) {
-            model.addAttribute("status", "Reservation failed: The selected dates are already booked or an error occurred.");
-        } else {
-            model.addAttribute("status", "Reservation successful for room: " + room.getName());
-        }
+                                   @RequestParam int numberOfPeople, RedirectAttributes redirectAttributes) {
+        String status = roomService.processReservation(userId, roomId, startDate, endDate, numberOfPeople);
+        redirectAttributes.addFlashAttribute("status", status);
         return "redirect:/rooms";
     }
 
     @PostMapping("/rooms/cancel")
-    public String handleCancellation(@RequestParam int reservationId, Model model) {
+    public String handleCancellation(@RequestParam int reservationId, RedirectAttributes redirectAttributes) {
         boolean success = roomService.cancelReservation(reservationId);
         if (success) {
-            model.addAttribute("status", "Reservation canceled successfully.");
+            redirectAttributes.addFlashAttribute("status", "Reservation canceled successfully.");
         } else {
-            model.addAttribute("status", "Failed to cancel reservation.");
+            redirectAttributes.addFlashAttribute("status", "Failed to cancel reservation.");
         }
         return "redirect:/rooms";
     }
@@ -124,18 +114,25 @@ public class RoomController {
     }
 
     @PostMapping("/rooms/partialPayment")
-    public String handlePartialPayment(@RequestParam int reservationId, @RequestParam double paymentAmount, Model model) {
-        Reservation reservation = reservationService.findById(reservationId).orElse(null);
-        if (reservation == null) {
-            model.addAttribute("status", "Reservation not found.");
-            return "rooms";
+    public String handlePartialPayment(@RequestParam int reservationId, @RequestParam double paymentAmount, RedirectAttributes redirectAttributes) {
+        Optional<Reservation> reservationOptional = reservationService.findById(reservationId);
+        if (reservationOptional.isEmpty()) {
+            redirectAttributes.addFlashAttribute("status", "Reservation not found.");
+            return "redirect:/rooms";
         }
-        boolean success = paymentService.handlePartialPayment(reservation, paymentAmount);
-        if (success) {
-            model.addAttribute("status", "Partial payment recorded.");
-        } else {
-            model.addAttribute("status", "Failed to record payment.");
+
+        Reservation reservation = reservationOptional.get();
+        try {
+            boolean success = paymentService.handlePartialPayment(reservation, paymentAmount);
+            if (success) {
+                redirectAttributes.addFlashAttribute("status", "Partial payment recorded successfully.");
+            } else {
+                redirectAttributes.addFlashAttribute("status", "Failed to record partial payment.");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("status", "An error occurred while recording partial payment.");
         }
+
         return "redirect:/rooms";
     }
 }

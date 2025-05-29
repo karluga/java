@@ -1,23 +1,56 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
     <title>My Reservations</title>
     <style>
-        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .room-card { border: 1px solid #ccc; padding: 10px; margin: 10px; width: 200px; display: inline-block; vertical-align: top; }
+        body { 
+            font-family: Arial, sans-serif; 
+            max-width: 1200px; 
+            margin: 0 auto; 
+            padding: 20px;
+        }
+        .room-card { border: 1px solid #ccc; padding: 10px; }
         .room-card.reserved { background-color: lightgreen; }
-        .form-group { margin-bottom: 15px; }
-        .form-group input { width: 100%; padding: 8px; }
-        .btn { padding: 10px; background-color: #007bff; color: white; border: none; cursor: pointer; }
+        .form-group {
+            display: flex;
+            margin-bottom: 15px; 
+        }
+        .form-group input { 
+            width: 100%; 
+            padding: 8px; 
+            width: -webkit-fill-available; 
+        }
+        .btn { 
+            padding: 10px; 
+            background-color: #007bff; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+        }
+        .btn.cancel { 
+            display: inline;
+            background-color: #dc3545; 
+        }
         .btn:hover { background-color: #0056b3; }
         .status { color: red; }
         .pagination { margin-top: 20px; }
         .pagination a { margin: 0 5px; text-decoration: none; }
         .pagination a.active { font-weight: bold; }
+        #room-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        #welcome-message {
+            display: inline;
+        }
+        #logout-btn {
+            float: right;
+        }
     </style>
 </head>
 <body>
-    <h2 th:text="${welcomeMessage}"></h2>
+    <h2 id="welcome-message" th:text="${welcomeMessage}"></h2><a id="logout-btn" th:href="@{/logout}">Logout</a>
     <p>Active Bookings: <span th:text="${activeBookings}"></span> | Total Bookings: <span th:text="${totalBookings}"></span></p>
     <form th:action="@{/booking}" method="get">
         <div class="form-group">
@@ -25,29 +58,29 @@
             <button type="submit" class="btn">Search</button>
         </div>
     </form>
-    <p th:if="${status}" class="status" th:text="${status}"></p>
-
-    <div th:each="room : ${rooms}" class="room-card" th:classappend="${cancellableReservations.?[roomId == room.id].size() > 0} ? 'reserved'">
-        <h3 th:text="${room.name}"></h3>
-        <p>Price: $<span th:text="${#numbers.formatDecimal(room.pricePerNight, 1, 2)}"></span>/night</p>
-        <p>Max People: <span th:text="${room.maxPeople}"></span></p>
-        <form th:action="@{/booking/reserve}" method="post">
-            <input type="hidden" name="roomId" th:value="${room.id}"/>
-            <div class="form-group">
-                <input type="date" name="startDate" required/>
-            </div>
-            <div class="form-group">
-                <input type="date" name="endDate" required/>
-            </div>
-            <div class="form-group">
-                <input type="number" name="numberOfPeople" min="1" th:max="${room.maxPeople}" value="1"/>
-            </div>
-            <button type="submit" class="btn">Reserve</button>
-        </form>
-        <div th:if="${cancellableReservations.?[roomId == room.id].size() > 0}">
-            <form th:action="@{/booking/cancel}" method="post">
-                <input type="hidden" name="reservationId" th:value="${cancellableReservations.?[roomId == room.id][0].id}"/>
-                <button type="submit" class="btn">Cancel</button>
+    <p class="status" th:text="${status}"></p>
+    <div id="room-grid">
+        <div th:each="room : ${rooms}" class="room-card" th:classappend="${room.reserved} ? 'reserved'">
+            <h3 th:text="${room.name}"></h3>
+            <p>Price: $<span th:text="${room.pricePerNight}"></span>/night</p>
+            <p>Max People: <span th:text="${room.maxPeople}"></span></p>
+            <form th:action="@{/booking/reserve}" method="post">
+                <input type="hidden" name="roomId" th:value="${room.id}"/>
+                <input type="hidden" name="userId" th:value="${userId}" />
+                <div class="form-group">
+                    <input type="date" name="startDate" required/>
+                </div>
+                <div class="form-group">
+                    <input type="date" name="endDate" required/>
+                </div>
+                <div class="form-group">
+                    <input type="number" name="numberOfPeople" min="1" th:max="${room.maxPeople}" value="1"/>
+                </div>
+                <button type="submit" class="btn">Reserve</button>
+            </form>
+            <form th:action="@{/booking/cancel}" method="post" th:if="${reservationsByRoomId.containsKey(room.id)}">
+                <input type="hidden" name="reservationId" th:value="${reservationsByRoomId[room.id]?.id}"/>
+                <button type="submit" class="btn cancel">Cancel</button>
             </form>
         </div>
     </div>
@@ -58,7 +91,5 @@
         </span>
         <a th:href="@{/booking(page=${currentPage + 1}, searchQuery=${searchQuery})}" th:if="${currentPage < totalPages - 1}">Next &raquo;</a>
     </div>
-
-    <a th:href="@{/logout}" class="btn">Logout</a>
 </body>
 </html>

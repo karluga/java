@@ -16,6 +16,7 @@ public class User {
 	private String username;
 	private String password;
 	private int role;
+	private String name;
 
 	public User() {
 		super();
@@ -58,5 +59,13 @@ public class User {
 
 	public void setRole(int role) {
 		this.role = role;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

@@ -19,6 +19,9 @@ public class Room {
     @Column(name = "price_per_night")
     private double pricePerNight;
 
+    @Column(name = "reserved")
+    private Boolean reserved; // Wrapper type to allow null values
+
     public Room() {}
 
     public Room(String name, int maxPeople, double pricePerNight) {
@@ -60,9 +63,11 @@ public class Room {
         this.pricePerNight = pricePerNight;
     }
 
-    public boolean isAvailable(LocalDate startDate, LocalDate endDate) {
-        // This method would require repository access in practice
-        // For simplicity, assuming it's handled in service layer
-        return true;
+    public Boolean isReserved() {
+        return reserved;
+    }
+
+    public void setReserved(Boolean reserved) {
+        this.reserved = reserved;
     }
 }
